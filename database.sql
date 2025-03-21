@@ -34,7 +34,7 @@ CREATE TABLE users (
   email VARCHAR(255) NOT NULL,
   password VARCHAR(255) NOT NULL,
   phone_number VARCHAR(20) NOT NULL,
-  status BIT DEFAULT 1 CHECK (status IN (0, 1)),
+  status BIT DEFAULT 1 NOT NULL CHECK (status IN (0, 1)),
   prepaid_id INT DEFAULT NULL,
   role_id INT NOT NULL,
 
@@ -62,7 +62,7 @@ CREATE TABLE professional_specialties (
 CREATE TABLE professional_schedules (
   id INT IDENTITY,
   professional_id INT NOT NULL,
-  day_of_week VARCHAR(20) CHECK (day_of_week IN ('Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo')) NOT NULL,
+  day_of_week VARCHAR(20) NOT NULL CHECK (day_of_week IN ('Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo')),
   start_time TIME NOT NULL,
   end_time TIME NOT NULL,
   appointment_duration INT NOT NULL CHECK (appointment_duration > 0),
@@ -91,7 +91,7 @@ CREATE TABLE appointments (
   date DATE NOT NULL,
   start_time TIME NOT NULL,
   end_time TIME NOT NULL,
-  status VARCHAR(20) CHECK (status IN ('Scheduled', 'Cancelled', 'Completed')) NOT NULL,
+  status VARCHAR(20) NOT NULL CHECK (status IN ('Scheduled', 'Cancelled', 'Completed')),
   notes VARCHAR(MAX) DEFAULT NULL,
 
   PRIMARY KEY (id),
@@ -105,7 +105,7 @@ CREATE TABLE notifications (
   user_id INT NOT NULL,
   message VARCHAR(255) NOT NULL,
   date DATE NOT NULL,
-  [read] BIT DEFAULT 0 CHECK ([read] IN (0, 1)),
+  [read] BIT DEFAULT 0 NOT NULL CHECK ([read] IN (0, 1)),
 
   PRIMARY KEY (id),
   FOREIGN KEY (user_id) REFERENCES users(id)
