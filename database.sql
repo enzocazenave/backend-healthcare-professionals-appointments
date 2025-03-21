@@ -1,17 +1,13 @@
 USE master;
-GO;
 
 IF EXISTS (SELECT * FROM sys.databases WHERE name = 'HealthcareProfessionalsAppointments')
 BEGIN
   DROP DATABASE HealthcareProfessionalsAppointments;
 END;
-GO;
 
 CREATE DATABASE HealthcareProfessionalsAppointments;
-GO;
 
 USE HealthcareProfessionalsAppointments;
-GO;
 
 CREATE TABLE roles (
   id INT IDENTITY,
@@ -26,7 +22,7 @@ INSERT INTO roles (name) VALUES ('PROFESSIONAL');
 CREATE TABLE prepaid (
   id INT IDENTITY,
   name VARCHAR(255) NOT NULL,
-  plan VARCHAR(50) NOT NULL,
+  [plan] VARCHAR(50) NOT NULL,
   code VARCHAR(255) NOT NULL,
 
   PRIMARY KEY (id)
@@ -109,7 +105,7 @@ CREATE TABLE notifications (
   user_id INT NOT NULL,
   message VARCHAR(255) NOT NULL,
   date DATE NOT NULL,
-  read BIT DEFAULT 0 CHECK (read IN (0, 1)),
+  [read] BIT DEFAULT 0 CHECK ([read] IN (0, 1)),
 
   PRIMARY KEY (id),
   FOREIGN KEY (user_id) REFERENCES users(id)
