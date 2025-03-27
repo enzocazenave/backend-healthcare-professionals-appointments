@@ -20,7 +20,6 @@
     "morgan": "^1.10.0",
     "mssql": "^11.0.1",
     "sequelize": "^6.37.6",
-    "swagger": "^0.7.5",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1"
   }
