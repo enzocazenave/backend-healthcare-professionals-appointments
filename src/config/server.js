@@ -20,7 +20,7 @@ class Server {
   }
 
   setRoutes() {
-
+    
   }
 
   start() {
