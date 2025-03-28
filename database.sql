@@ -19,7 +19,7 @@ CREATE TABLE roles (
 INSERT INTO roles (name) VALUES ('PATIENT');
 INSERT INTO roles (name) VALUES ('PROFESSIONAL');
 
-CREATE TABLE prepaid (
+CREATE TABLE prepaids (
   id INT IDENTITY,
   name VARCHAR(255) NOT NULL,
   [plan] VARCHAR(50) NOT NULL,

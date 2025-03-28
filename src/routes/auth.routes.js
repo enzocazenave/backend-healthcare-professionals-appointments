@@ -1,13 +1,24 @@
-import { Router } from "express";
-import authControllers from "../controllers/auth.controllers";
+import { Router } from 'express';
+import { body } from 'express-validator';
+import authControllers from '../controllers/auth.controllers.js';
+import fieldValidator from '../middlewares/fieldValidator.js';
 
 const router = Router();
 
-router.post("/register", [], authControllers.register);
+router.post("/register", [
+  body('fullName', 'FULL_NAME_IS_REQUIRED').isString(),
+  body('email', 'EMAIL_IS_REQUIRED').isString().isEmail(),
+  body('password', 'PASSWORD_IS_REQUIRED').isString().isLength({ min: 6 }),
+  fieldValidator
+], authControllers.register);
 
-router.post("/login", [], authControllers.login);
+router.post("/login", [
+  body('email', 'EMAIL_IS_REQUIRED').isString().isEmail(),
+  body('password', 'PASSWORD_IS_REQUIRED').isString().isLength({ min: 6 }),
+  fieldValidator
+], authControllers.login);
 
-router.post("/refresh-token", [], authControllers.renewToken);
+router.post("/refresh-token", [], authControllers.refreshToken);
 
 router.post("/logout", [], authControllers.logout);
 

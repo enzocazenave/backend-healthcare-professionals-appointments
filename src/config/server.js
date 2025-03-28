@@ -4,6 +4,9 @@ import http from 'http';
 import morgan from 'morgan';
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './swagger.js';
+import cookieParser from 'cookie-parser';
+
+import authRoutes from '../routes/auth.routes.js'
 
 class Server {
   constructor() {
@@ -16,11 +19,12 @@ class Server {
     this.app.use(cors({}));
     this.app.use(express.json());
     this.app.use(morgan('dev'));
+    this.app.use(cookieParser())
     this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
   }
 
   setRoutes() {
-    
+    this.app.use('/auth', authRoutes);
   }
 
   start() {
