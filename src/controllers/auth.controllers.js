@@ -19,7 +19,7 @@ const authControllers = {
         maxAge: process.env.SECRET_JWT_REFRESH_TOKEN_MAX_AGE
       });
 
-      sendSuccessResponse(res, 200, {
+      sendSuccessResponse(res, 201, {
         userId: response.userId,
         userRole: response.userRole,
         token: response.token
