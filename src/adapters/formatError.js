@@ -16,7 +16,10 @@ const errors = {
   authServices: {
     REFRESH_TOKEN_IS_INVALID: 'Acceso no autorizado, el token no es válido.',
     EMAIL_ALREADY_REGISTERED: 'El email ya está registrado.',
-    INCORRECT_CREDENTIALS: 'Credenciales incorrectas.'
+    INCORRECT_CREDENTIALS: 'Credenciales incorrectas.',
+    EMAIL_NOT_FOUND: 'Ese email no está asociado a una cuenta.',
+    CODE_NOT_FOUND: 'El código es incorrecto.',
+    CODE_EXPIRED: 'El código ha expirado.'
   }
 }
 
