@@ -3,7 +3,7 @@
  * tags:
  *   name: Auth
  *   description: Endpoints de autenticación
- */
+*/
 
 /**
  * @swagger
@@ -191,7 +191,7 @@
  *                   type: string
  *                 data:
  *                   type: object
- */
+*/
 
 /**
  * @swagger
@@ -245,4 +245,132 @@
  *                   type: string
  *                 data:
  *                   type: object
- */
+*/
+
+/**
+ * @swagger
+ * /auth/forgot-password:
+ *   post:
+ *     summary: Solicitud de restablecimiento de contraseña
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: enzo@gmail.com
+ *     responses:
+ *       200:
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 code:
+ *                   type: string
+ *       400:
+ *         description: Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                 status:
+ *                   type: integer
+ *                 error:
+ *                   type: string
+ *                 data:
+ *                   type: object
+ *       500:
+ *         description: Error interno
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                 status:
+ *                   type: integer
+ *                 error:
+ *                   type: string
+ *                 data:
+ *                   type: object
+*/
+
+/**
+ * @swagger
+ * /auth/reset-password:
+ *   post:
+ *     summary: Restablecimiento de contraseña
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: enzo@gmail.com
+ *               password:
+ *                 type: string
+ *                 example: 123456
+ *               code:
+ *                 type: integer
+ *                 example: 123456
+ *     responses:
+ *       200:
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                 status:
+ *                   type: integer
+ *                 error:
+ *                   type: string
+ *                 data:
+ *                   type: object
+ *       400:
+ *         description: Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                 status:
+ *                   type: integer
+ *                 error:
+ *                   type: string
+ *                 data:
+ *                   type: object
+ *       500:
+ *         description: Error interno
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                 status:
+ *                   type: integer
+ *                 error:
+ *                   type: string
+ *                 data:
+ *                   type: object
+*/
