@@ -22,8 +22,16 @@ router.post("/refresh-token", [], authControllers.refreshToken);
 
 router.post("/logout", [], authControllers.logout);
 
-router.post("/forgot-password", [], authControllers.forgotPassword);
+router.post("/forgot-password", [
+  body('email', 'EMAIL_IS_REQUIRED').isString().isEmail(),
+  fieldValidator
+], authControllers.forgotPassword); 
 
-router.post("/reset-password", [], authControllers.resetPassword);
+router.post("/reset-password", [
+  body('email', 'EMAIL_IS_REQUIRED').isString().isEmail(),
+  body('password', 'PASSWORD_IS_REQUIRED').isString().isLength({ min: 6 }),
+  body('code', 'CODE_IS_REQUIRED').isInt(),
+  fieldValidator
+], authControllers.resetPassword);
 
 export default router;

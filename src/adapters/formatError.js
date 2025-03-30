@@ -3,7 +3,8 @@ const errors = {
     FULL_NAME_IS_REQUIRED: 'El nombre completo es obligatorio.',
     EMAIL_IS_REQUIRED: 'El email es obligatorio.',
     PASSWORD_IS_REQUIRED: 'La contraseña es obligatoria y debe tener al menos 6 caracteres.',
-    ROLE_ID_IS_REQUIRED: 'El rol es obligatorio.'
+    ROLE_ID_IS_REQUIRED: 'El rol es obligatorio.',
+    CODE_IS_REQUIRED: 'El código es obligatorio.'
   },
   middlewareTokenValidator: {
     TOKEN_NOT_FOUND: 'Acceso no autorizado, no se encontró el token.',
@@ -15,7 +16,10 @@ const errors = {
   authServices: {
     REFRESH_TOKEN_IS_INVALID: 'Acceso no autorizado, el token no es válido.',
     EMAIL_ALREADY_REGISTERED: 'El email ya está registrado.',
-    INCORRECT_CREDENTIALS: 'Credenciales incorrectas.'
+    INCORRECT_CREDENTIALS: 'Credenciales incorrectas.',
+    EMAIL_NOT_FOUND: 'Ese email no está asociado a una cuenta.',
+    CODE_NOT_FOUND: 'El código es incorrecto.',
+    CODE_EXPIRED: 'El código ha expirado.'
   }
 }
 

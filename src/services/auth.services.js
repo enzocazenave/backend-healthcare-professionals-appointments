@@ -1,7 +1,10 @@
 import jwt from 'jsonwebtoken';
-import User from '../models/User.js';
+import crypto from 'crypto';
 import { compareSync, genSaltSync, hashSync } from 'bcryptjs';
+import User from '../models/User.js';
+import PasswordResetCode from '../models/PasswordResetCode.js';
 import generateToken from '../helpers/generateToken.js';
+import { Sequelize } from 'sequelize';
 
 const authServices = {
   register: async ({ fullName, email, password, role_id }) => {
@@ -107,12 +110,64 @@ const authServices = {
     }
   },
 
-  forgotPassword: async () => {
+  forgotPassword: async ({ email }) => {
+    try {
+      const user = await User.findOne({ where: { email: email } });
 
+      if (!user) throw { 
+        layer: 'authServices', 
+        key: 'EMAIL_NOT_FOUND'
+      }
+
+      await PasswordResetCode.destroy({ 
+        where: {
+          expirates_at: {
+            [Sequelize.Op.lt]: new Date()
+          }
+        } 
+      });
+
+      const code = crypto.randomInt(100000, 999999).toString();
+      const currentTime = new Date().getTime();
+      const codeExpiration = new Date(currentTime + (1000 * 60 * 5));
+
+      await PasswordResetCode.create({
+        code,
+        email,
+        expirates_at: codeExpiration
+      });
+
+      return { code }
+    } catch(error) {
+      throw error;
+    }
   },
 
-  resetPassword: async () => {
+  resetPassword: async ({ email, password, code  }) => { 
+    try {
+      const passwordResetCode = await PasswordResetCode.findOne({ where: { code, email } });
 
+      if (!passwordResetCode) throw { 
+        layer: 'authServices', 
+        key: 'CODE_NOT_FOUND'
+      }
+
+      const isCodeExpired = passwordResetCode.expirates_at < new Date();
+
+      if (isCodeExpired) throw { 
+        layer: 'authServices', 
+        key: 'CODE_EXPIRED'
+      }
+
+      const hashedPassword = hashSync(password, genSaltSync());
+      
+      await User.update({ password: hashedPassword }, { where: { email: email } });
+      await PasswordResetCode.destroy({ where: { code, email } });
+
+      return "La contraseña ha sido actualizada correctamente.";
+    } catch(error) {
+      throw error;
+    }
   }
 }
 

@@ -78,11 +78,29 @@ const authControllers = {
   },
 
   forgotPassword: async (req = request, res = response) => {
-    sendSuccessResponse(res, 200, {})
+    try {
+      const response = await authServices.forgotPassword({
+        email: req.body.email
+      });
+
+      sendSuccessResponse(res, 200, response);
+    } catch(error) {
+      sendErrorResponse(res, 400, error);
+    }
   },
 
   resetPassword: async (req = request, res = response) => {
-    sendSuccessResponse(res, 200, {})
+    try {
+      const response = await authServices.resetPassword({
+        email: req.body.email,
+        password: req.body.password,
+        code: req.body.code
+      });
+
+      sendSuccessResponse(res, 200, response);
+    } catch(error) {
+      sendErrorResponse(res, 400, error);
+    }
   }
 }
 
