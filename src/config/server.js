@@ -7,6 +7,7 @@ import swaggerSpec from './swagger.js';
 import cookieParser from 'cookie-parser';
 
 import authRoutes from '../routes/auth.routes.js'
+import userRoutes from '../routes/user.routes.js'  
 
 class Server {
   constructor() {
@@ -25,6 +26,7 @@ class Server {
 
   setRoutes() {
     this.app.use('/auth', authRoutes);
+    this.app.use('/user', userRoutes);
   }
 
   start() {

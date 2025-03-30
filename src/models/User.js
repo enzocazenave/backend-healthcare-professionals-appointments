@@ -27,11 +27,6 @@ const User = sequelize.define('user', {
     type: DataTypes.STRING(20),
     allowNull: true,
   },
-  status: {
-    type: DataTypes.BOOLEAN,
-    allowNull: false,
-    defaultValue: true
-  },
   prepaid_id: {
     type: DataTypes.INTEGER,
     allowNull: true,
@@ -50,7 +45,8 @@ const User = sequelize.define('user', {
     }
   }
 }, {
-  timestamps: false
+  timestamps: true,
+  paranoid: true
 });
 
 User.belongsTo(Prepaid, { foreignKey: 'prepaid_id' });

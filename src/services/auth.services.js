@@ -3,13 +3,14 @@ import crypto from 'crypto';
 import { compareSync, genSaltSync, hashSync } from 'bcryptjs';
 import User from '../models/User.js';
 import PasswordResetCode from '../models/PasswordResetCode.js';
-import generateToken from '../helpers/generateToken.js';
+import generateToken from '../utils/generateToken.js';
 import { Sequelize } from 'sequelize';
+import sendMail from '../utils/sendMail.js';
 
 const authServices = {
   register: async ({ fullName, email, password, role_id }) => {
     try {
-      const isEmailAlreadyRegistered = await User.findOne({ where: { email: email } });
+      const isEmailAlreadyRegistered = await User.findOne({ where: { email: email }, paranoid: false });
 
       if (isEmailAlreadyRegistered) throw {
         layer: 'authServices',
@@ -127,9 +128,19 @@ const authServices = {
         } 
       });
 
+      await PasswordResetCode.destroy({ where: { email: email } });
+
       const code = crypto.randomInt(100000, 999999).toString();
       const currentTime = new Date().getTime();
       const codeExpiration = new Date(currentTime + (1000 * 60 * 5));
+
+      const emailBody = `
+        <h1 style="font-size: 24px">Hola ${user.full_name}, solicitaste un cambio de contraseña.</h1>
+        <p style="font-size: 20px">Tu código de recuperación de contraseña es: <strong>${code}</strong></p>
+        <p>Si no has solicitado este cambio, puedes ignorar este correo.</p>
+      `
+
+      await sendMail(email, 'Código de recuperación de contraseña', emailBody);
 
       await PasswordResetCode.create({
         code,
@@ -137,8 +148,8 @@ const authServices = {
         expirates_at: codeExpiration
       });
 
-      return { code }
     } catch(error) {
+      console.log(error)
       throw error;
     }
   },
