@@ -9,7 +9,7 @@ const router = Router();
 router.post("/", [
   tokenValidator,
   body('professionalId', 'PROFESSIONAL_ID_IS_REQUIRED').isInt(),
-  body('patientId', 'PATIENT_ID_IS_REQUIRED').isInt(),
+  body('patientId', 'PATIENT_ID_IS_REQUIRED').isInt().optional(),
   body('specialtyId', 'SPECIALTY_ID_IS_REQUIRED').isInt(),
   body('date', 'DATE_IS_REQUIRED').isDate(),
   body('startTime', 'START_TIME_IS_REQUIRED').isTime(),
