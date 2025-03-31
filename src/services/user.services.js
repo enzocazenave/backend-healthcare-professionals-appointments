@@ -7,7 +7,7 @@ const userServices = {
     try {
       const user = await User.findOne({
         where: { id: userId},
-        attributes: { exclude: ['role_id', 'prepaid_id']},
+        attributes: { exclude: ['role_id', 'prepaid_id', 'password', 'deletedAt']},
         include: [{ model: Role }, { model: Prepaid }]
       });
 
@@ -17,9 +17,7 @@ const userServices = {
         statusCode: 404
       }
 
-      const { password, ...userData } = user.get({ plain: true });
-
-      return userData;
+      return user;
     } catch (error) {
       throw error;
     }

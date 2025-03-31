@@ -530,6 +530,15 @@ paths:
                   - field: code
                     message: El código es obligatorio.
                 data: {}
+        '401':
+          description: Error de autenticación.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 401
+                error: Acceso no autorizado, falta el token de autenticación.
+                data: {}
         '404':
           description: El usuario no existe.
           content:
@@ -547,6 +556,414 @@ paths:
                 ok: false
                 status: 409
                 error: Ya existe una prepaga asociada al usuario.
+                data: {}
+        '500':
+          description: Error interno del servidor.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 500
+                error: Ocurrió un error inesperado.
+                data: {}
+  
+  /specialty:
+    get:
+      tags:
+        - Especialidad
+      summary: Obtener todas las especialidades.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Se han obtenido todas las especialidades.
+          content:
+            application/json:
+              example:
+                ok: true
+                status: 200
+                error: null
+                data:
+                  - id: 1
+                    name: Medicina
+                  - id: 2
+                    name: Farmacia
+                  - id: 3
+                    name: Farmacia
+                  - id: 4
+                    name: Farmacia
+                  - id: 5
+                    name: Farmacia
+        '401':
+          description: Error de autenticación.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 401
+                error: Acceso no autorizado, falta el token de autenticación.
+                data: {}
+        '500':
+          description: Error interno del servidor.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 500
+                error: Ocurrió un error inesperado.
+                data: {}
+    post:
+      tags:
+        - Especialidad
+      summary: Crear una especialidad.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: El nombre de la especialidad.
+                  example: Farmacia
+              required:
+                - name
+      responses:
+        '201':
+          description: Se ha creado correctamente la especialidad.
+          content:
+            application/json:
+              example:
+                ok: true
+                status: 201
+                error: null
+                data:
+                  id: 1
+                  name: Farmacia
+        '400':
+          description: El cuerpo de la petición no es válido.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 400
+                error: 
+                  - field: name
+                    message: El nombre es obligatorio.
+                data: {}
+        '401':
+          description: Error de autenticación.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 401
+                error: Acceso no autorizado, falta el token de autenticación.
+                data: {}
+        '409':
+          description: La especialidad ya existe.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 409
+                error: La especialidad ya existe.
+                data: {}
+        '500':
+          description: Error interno del servidor.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 500
+                error: Ocurrió un error inesperado.
+                data: {}
+  /specialty/{specialtyId}/professionals:
+    get:
+      tags:
+        - Especialidad
+      summary: Obtener todos los profesionales asociados a una especialidad.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: specialtyId
+          required: true
+          schema:
+            type: integer
+            format: int32
+          description: El id de la especialidad.
+          example: 1
+      responses:
+        '200':
+          description: Se han obtenido todos los profesionales asociados a la especialidad.
+          content:
+            application/json:
+              example:
+                ok: true
+                status: 200
+                error: null
+                data:
+                  - id: 1
+                    full_name: Juan Perez
+                    email: juanperez@gmail.com
+                    phone_number: +5698989898
+                    createdAt: 2022-03-21T22:00:00.000Z
+        '400':
+          description: El cuerpo de la petición no es válido.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 400
+                error: 
+                  - field: specialtyId
+                    message: El specialtyId es obligatorio.
+                data: {}
+        '401':
+          description: Error de autenticación.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 401
+                error: Acceso no autorizado, falta el token de autenticación.
+                data: {}
+        '404':
+          description: La especialidad no existe.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 404
+                error: La especialidad no existe.
+                data: {}
+        '500':
+          description: Error interno del servidor.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 500
+                error: Ocurrió un error inesperado.
+                data: {}
+  /specialty/professionals/{professionalId}:
+    post:
+      tags:
+        - Especialidad
+      summary: Añadir un profesional a una especialidad.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: professionalId
+          required: true
+          schema:
+            type: integer
+            format: int32
+          description: El id del profesional.
+          example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                specialtyId:
+                  type: integer
+                  format: int32
+                  description: El id de la especialidad.
+                  example: 1
+      responses:
+        '201':
+          description: Se ha añadido correctamente el profesional a la especialidad.
+          content:
+            application/json:
+              example:
+                ok: true
+                status: 201
+                error: null
+                data: El profesional ha sido añadido correctamente a la especialidad.
+        '400':
+          description: El cuerpo de la petición no es válido.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 400
+                error: 
+                  - field: specialtyId
+                    message: El specialtyId es obligatorio.
+                data: {}
+        '401':
+          description: Error de autenticación.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 401
+                error: Acceso no autorizado, falta el token de autenticación.
+                data: {}
+        '404':
+          description: La especialidad no existe.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 404
+                error: La especialidad no existe.
+                data: {}
+        '409':
+          description: El profesional ya está asociado a la especialidad.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 409
+                error: El profesional ya está asociado a la especialidad.
+                data: {}
+        '500':
+          description: Error interno del servidor.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 500
+                error: Ocurrió un error inesperado.
+                data: {}
+    delete:
+      tags:
+        - Especialidad
+      summary: Eliminar un profesional de una especialidad.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: professionalId
+          required: true
+          schema:
+            type: integer
+            format: int32
+          description: El id del profesional.
+          example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                specialtyId:
+                  type: integer
+                  format: int32
+                  description: El id de la especialidad.
+                  example: 1
+      responses:
+        '200':
+          description: Se ha eliminado correctamente el profesional de la especialidad.
+          content:
+            application/json:
+              example:
+                ok: true
+                status: 200
+                error: null
+                data: El profesional ha sido eliminado correctamente de la especialidad.
+        '400':
+          description: El cuerpo de la petición no es válido.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 400
+                error: 
+                  - field: specialtyId
+                    message: El specialtyId es obligatorio.
+                data: {}
+        '401':
+          description: Error de autenticación.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 401
+                error: Acceso no autorizado, falta el token de autenticación.
+                data: {}
+        '404':
+          description: La especialidad no existe.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 404
+                error: La especialidad no existe.
+                data: {}
+        '500':
+          description: Error interno del servidor.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 500
+                error: Ocurrió un error inesperado.
+                data: {}
+  /specialty/{specialtyId}:
+    delete:
+      tags:
+        - Especialidad
+      summary: Eliminar una especialidad.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: specialtyId
+          required: true
+          schema:
+            type: integer
+            format: int32
+          description: El id de la especialidad.
+          example: 1
+      responses:
+        '200':
+          description: Se ha eliminado correctamente la especialidad.
+          content:
+            application/json:
+              example:
+                ok: true
+                status: 200
+                error: null
+                data: La especialidad ha sido eliminada correctamente.
+        '400':
+          description: El cuerpo de la petición no es válido.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 400
+                error: 
+                  - field: specialtyId
+                    message: El specialtyId es obligatorio.
+                data: {}
+        '401':
+          description: Error de autenticación.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 401
+                error: Acceso no autorizado, falta el token de autenticación.
+                data: {}
+        '404':
+          description: La especialidad no existe.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 404
+                error: La especialidad no existe.
                 data: {}
         '500':
           description: Error interno del servidor.

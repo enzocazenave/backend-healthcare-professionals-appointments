@@ -8,6 +8,8 @@ import YAML from 'yamljs';
 
 import authRoutes from '../routes/auth.routes.js'
 import userRoutes from '../routes/user.routes.js'  
+import appointmentRoutes from '../routes/appointment.routes.js'
+import specialtyRoutes from '../routes/specialty.routes.js'
 
 class Server {
   constructor() {
@@ -27,6 +29,8 @@ class Server {
   setRoutes() {
     this.app.use('/auth', authRoutes);
     this.app.use('/user', userRoutes);
+    this.app.use('/appointment', appointmentRoutes);
+    this.app.use('/specialty', specialtyRoutes);
   }
 
   start() {

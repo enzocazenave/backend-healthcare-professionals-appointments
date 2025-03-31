@@ -30,6 +30,13 @@ Role.sync()
       },
     })
   })
+  .then(() => {
+    return Role.findOrCreate({
+      where: {
+        name: 'ADMIN'
+      },
+    })
+  })
   .catch((err) => {
     console.error(err);
   });
