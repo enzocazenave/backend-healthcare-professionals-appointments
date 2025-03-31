@@ -13,7 +13,8 @@ const userServices = {
 
       if (!user) throw {
         layer: 'userServices',
-        key: 'USER_NOT_FOUND'
+        key: 'USER_NOT_FOUND',
+        statusCode: 404
       }
 
       const { password, ...userData } = user.get({ plain: true });
@@ -30,12 +31,14 @@ const userServices = {
 
       if (!user) throw {
         layer: 'userServices',
-        key: 'USER_NOT_FOUND'
+        key: 'USER_NOT_FOUND',
+        statusCode: 404
       }
 
       if (user.prepaid_id) throw {
         layer: 'userServices',
-        key: 'PREPAID_ALREADY_EXISTS'
+        key: 'PREPAID_ALREADY_EXISTS',
+        statusCode: 409
       }
 
       const prepaid = await Prepaid.create({ name, plan, code });
@@ -53,7 +56,8 @@ const userServices = {
 
       if (!user) throw {
         layer: 'userServices',
-        key: 'USER_NOT_FOUND'
+        key: 'USER_NOT_FOUND',
+        statusCode: 404
       }
 
       if (phoneNumber) {
@@ -84,7 +88,8 @@ const userServices = {
 
       if (!user) throw {
         layer: 'userServices',
-        key: 'USER_NOT_FOUND'
+        key: 'USER_NOT_FOUND',
+        statusCode: 404
       }
 
       await user.destroy();

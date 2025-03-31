@@ -6,6 +6,7 @@ import PasswordResetCode from '../models/PasswordResetCode.js';
 import generateToken from '../utils/generateToken.js';
 import { Sequelize } from 'sequelize';
 import sendMail from '../utils/sendMail.js';
+import { stat } from 'fs';
 
 const authServices = {
   register: async ({ fullName, email, password, role_id }) => {
@@ -14,7 +15,8 @@ const authServices = {
 
       if (isEmailAlreadyRegistered) throw {
         layer: 'authServices',
-        key: 'EMAIL_ALREADY_REGISTERED'
+        key: 'EMAIL_ALREADY_REGISTERED',
+        statusCode: 409
       }
       
       const hashedPassword = hashSync(password, genSaltSync());
@@ -59,14 +61,16 @@ const authServices = {
 
       if (!user) throw { 
         layer: 'authServices', 
-        key: 'INCORRECT_CREDENTIALS'
+        key: 'INCORRECT_CREDENTIALS',
+        statusCode: 401
       }
 
       const isPasswordValid = compareSync(password, user.password);
 
       if (!isPasswordValid) throw { 
         layer: 'authServices', 
-        key: 'INCORRECT_CREDENTIALS'
+        key: 'INCORRECT_CREDENTIALS',
+        statusCode: 401
       }
 
       const tokenPayload = {
@@ -107,7 +111,7 @@ const authServices = {
         token: newToken
       };
     } catch(error) {
-      throw { layer: 'authServices', key: 'REFRESH_TOKEN_IS_INVALID' }
+      throw { layer: 'authServices', key: 'REFRESH_TOKEN_IS_INVALID', statusCode: 401 }
     }
   },
 
@@ -117,7 +121,8 @@ const authServices = {
 
       if (!user) throw { 
         layer: 'authServices', 
-        key: 'EMAIL_NOT_FOUND'
+        key: 'EMAIL_NOT_FOUND',
+        statusCode: 404
       }
 
       await PasswordResetCode.destroy({ 
@@ -160,14 +165,16 @@ const authServices = {
 
       if (!passwordResetCode) throw { 
         layer: 'authServices', 
-        key: 'CODE_NOT_FOUND'
+        key: 'CODE_NOT_FOUND',
+        statusCode: 404
       }
 
       const isCodeExpired = passwordResetCode.expirates_at < new Date();
 
       if (isCodeExpired) throw { 
         layer: 'authServices', 
-        key: 'CODE_EXPIRED'
+        key: 'CODE_EXPIRED',
+        statusCode: 400
       }
 
       const hashedPassword = hashSync(password, genSaltSync());

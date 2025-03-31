@@ -1,0 +1,559 @@
+openapi: 3.0.0
+info:
+  title: Healthcare Professionals Appointments
+  version: 1.0.0
+  description: Backend for healthcare professionals appointments
+
+servers:
+  - url: http://localhost:3000
+    description: Servidor local
+  
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+paths:
+  /auth/register:
+    post:
+      summary: Crear una cuenta
+      description: Endpoint que permite la creación de un nuevo usuario.
+      tags: [Autenticación]
+      requestBody:
+        description: Datos del usuario a crear.
+        required: true
+        content:
+          application/json:
+            example:
+              fullName: Enzo
+              email: enzo@gmail.com
+              password: difficultpassword
+              roleId: 1
+      responses:
+        '201':
+          description: Usuario creado correctamente.
+          content:
+            application/json:
+              example:
+                ok: true
+                status: 201
+                error: null
+                data:
+                  userId: 1
+                  userRole: 1
+                  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE2MzI1MzU0NDQ0IiwiaWF0IjoxNjI5MjE0ODQ5L
+        '400':
+          description: El cuerpo de la petición no es válido.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 400
+                error: 
+                  - field: fullName
+                    message: El nombre completo es obligatorio.
+                  - field: email
+                    message: El email es obligatorio.
+                data: {}
+        '409':
+          description: El email ya está registrado.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 409
+                error: El email ya está registrado. 
+                data: {}
+        '500':
+          description: Error interno del servidor.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 500
+                error: Ocurrió un error inesperado.
+                data: {}
+  /auth/login:
+    post:
+      summary: Iniciar sesión
+      description: Endpoint que permite el inicio de sesión de un usuario.
+      tags: [Autenticación]
+      requestBody:
+        description: Datos del usuario a iniciar sesión.
+        required: true
+        content:
+          application/json:
+            example:
+              email: enzo@gmail.com
+              password: difficultpassword
+      responses:
+        '200':
+          description: Login exitoso.
+          content:
+            application/json:
+              example:
+                ok: true
+                status: 200
+                error: null
+                data:
+                  userId: 1
+                  userRole: 1
+                  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE2MzI1MzU0NDQ0IiwiaWF0IjoxNjI5MjE0ODQ5L
+        '400':
+          description: El cuerpo de la petición no es válido.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 400
+                error:
+                  - field: email
+                    message: El email es obligatorio.
+                data: {}
+        '401':
+          description: Credenciales incorrectas.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 401
+                error: Credenciales incorrectas.
+                data: {}
+        '500':
+          description: Error interno del servidor.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 500
+                error: Ocurrió un error inesperado.
+                data: {}
+  /auth/refresh-token:
+    post:
+      summary: Actualización de token
+      description: Endpoint que permite la actualización del token de acceso mediante el refresh token almacenado en las cookies.
+      tags: [Autenticación]
+      headers:
+        Set-Cookie:
+          description: Cookie que contiene el refreshToken para su posterior uso.
+          schema:
+            type: string
+            example: refreshToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE2MzI1MzU0NDQ0IiwiaWF0IjoxNjI5MjE0ODQ5L
+      responses:
+        '200':
+          description: Token actualizado correctamente.
+          content:
+            application/json:
+              example:
+                ok: true
+                status: 200
+                error: null
+                data:
+                  userId: 1
+                  userRole: 1
+                  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE2MzI1MzU0NDQ0IiwiaWF0IjoxNjI5MjE0ODQ5L
+        '401':
+          description: Error de autenticación.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 401
+                error: Acceso no autorizado, no se encontró el token.
+                data: {}
+        '500':
+          description: Error interno del servidor.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 500
+                error: Ocurrió un error inesperado.
+                data: {}
+  /auth/logout:
+    post:
+      summary: Cerrar sesión
+      description: Endpoint que permite el cierre de sesión del usuario actual.
+      tags: [Autenticación]
+      headers:
+        Set-Cookie:
+          description: Cookie que contiene el refreshToken para su posterior uso.
+          schema:
+            type: string
+            example: refreshToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE2MzI1MzU0NDQ0IiwiaWF0IjoxNjI5MjE0ODQ5L
+      responses:
+        '200':
+          description: Sesión cerrada correctamente.
+          content:
+            application/json:
+              example:
+                ok: true
+                status: 200
+                error: Sesión cerrada correctamente.
+                data: null
+        '401':
+          description: Error de autenticación.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 401
+                error: Acceso no autorizado, no se encontró el token.
+                data: {}
+        '500':
+          description: Error interno del servidor.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 500
+                error: Ocurrió un error inesperado.
+                data: {}
+  /auth/forgot-password:
+    post:
+      summary: Recuperar contraseña
+      description: Endpoint que permite el inicio del proceso de recuperación de contraseña enviando un código al email del usuario.
+      tags: [Autenticación]
+      requestBody:
+        description: Datos del usuario a recuperar la contraseña.
+        required: true
+        content:
+          application/json:
+            example:
+              email: enzo@gmail.com
+      responses:
+        '200':
+          description: Código de recuperación enviado correctamente.
+          content:
+            application/json:
+              example:
+                ok: true
+                status: 200
+                error: null
+                data: {}
+        '400':
+          description: El cuerpo de la petición no es válido.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 400
+                error:
+                  - field: email
+                    message: El email es obligatorio.
+                data: {}
+        '404':
+          description: El email no existe.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 404
+                error: El email no existe.
+                data: {}
+        '500':
+          description: Error interno del servidor.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 500
+                error: Ocurrió un error inesperado.
+                data: {}
+  /auth/reset-password:
+    post:
+      summary: Restablecer contraseña
+      description: Endpoint que permite el restablecimiento de la contraseña utilizando el código de recuperación.
+      tags: [Autenticación]
+      requestBody:
+        description: Datos del usuario a restablecer la contraseña.
+        required: true
+        content:
+          application/json:
+            example:
+              email: enzo@gmail.com
+              password: difficultpassword
+              code: 123456
+      responses:
+        '200':
+          description: Contraseña actualizada correctamente.
+          content:
+            application/json:
+              example:
+                ok: true
+                status: 200
+                error: null
+                data: "La contraseña ha sido actualizada correctamente."
+        '400':
+          description: El cuerpo de la petición no es válido.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 400
+                error:
+                  - field: email
+                    message: El email es obligatorio.
+                  - field: password
+                    message: La contraseña es obligatoria y debe tener al menos 6 caracteres.
+                  - field: code
+                    message: El código de recuperación es obligatorio.
+                data: {}
+        '404':
+          description: El código de recuperación no existe.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 404
+                error: El código de recuperación no existe.
+                data: {}
+        '500':
+          description: Error interno del servidor.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 500
+                error: Ocurrió un error inesperado. 
+                data: {}
+
+  /user:
+    get:
+      summary: Obtener datos de usuario
+      description: Endpoint que permite obtener los datos de un usuario.
+      tags: [Usuario]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              example:
+                ok: true
+                status: 200
+                error: null
+                data:
+                  id: 1
+                  full_name: Enzo
+                  email: enzo@gmail.com
+                  phone_number: +56987654321
+                  role:
+                    id: 1
+                    name: Usuario
+                  prepaid:
+                    id: 1
+                    name: Prepaga 1
+                    plan: Basic
+                    code: 123456
+        '401':
+          description: Error de autenticación.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 401
+                error: Acceso no autorizado, no se encontró el token.
+                data: {}
+        '404':
+          description: El usuario no existe.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 404
+                error: El usuario no existe.
+                data: {}
+        '500':
+          description: Error interno del servidor.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 500
+                error: Ocurrió un error inesperado.
+                data: {}
+    patch:
+      summary: Actualizar datos de usuario
+      description: Endpoint que permite actualizar los datos de un usuario.
+      tags: [Usuario]
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: Datos del usuario a actualizar.
+        required: true
+        content:
+          application/json:
+            example:
+              phoneNumber: +56987654321
+              name: Enzo
+              plan: Basic
+              code: 123456
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              example:
+                ok: true
+                status: 200
+                error: null
+                data: "Datos actualizados correctamente."
+        '400':
+          description: El cuerpo de la petición no es válido.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 400
+                error:
+                  - field: phoneNumber
+                    message: El número de teléfono debe ser un string.
+                  - field: name
+                    message: El nombre es obligatorio.
+                  - field: plan
+                    message: El plan es obligatorio.
+                  - field: code
+                    message: El código es obligatorio.
+                data: {}
+        '401':
+          description: Error de autenticación.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 401
+                error: Acceso no autorizado, no se encontró el token.
+                data: {}
+        '404':
+          description: El usuario no existe.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 404
+                error: El usuario no existe.
+                data: {}
+        '500':
+          description: Error interno del servidor.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 500
+                error: Ocurrió un error inesperado.
+                data: {}
+    delete:
+      summary: Eliminar usuario
+      description: Endpoint que permite eliminar un usuario.
+      tags: [Usuario]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              example:
+                ok: true
+                status: 200
+                error: null
+                data: "Usuario eliminado correctamente."
+        '401':
+          description: Error de autenticación.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 401
+                error: Acceso no autorizado, no se encontró el token.
+                data: {}
+        '404':
+          description: El usuario no existe.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 404
+                error: El usuario no existe.
+                data: {}
+        '500':
+          description: Error interno del servidor.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 500
+                error: Ocurrió un error inesperado.
+                data: {}
+  /user/prepaid:
+    post:
+      summary: Añadir prepaga
+      description: Endpoint que permite añadir una prepaga a un usuario.
+      tags: [Usuario]
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: Datos del usuario a añadir la prepaga.
+        required: true
+        content:
+          application/json:
+            example:
+              name: Prepaga 1
+              plan: Basic
+              code: 123456
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              example:
+                ok: true
+                status: 200
+                error: null
+                data: "La prepaga ha sido añadida correctamente."
+        '400':
+          description: El cuerpo de la petición no es válido.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 400
+                error:
+                  - field: name
+                    message: El nombre es obligatorio.
+                  - field: plan
+                    message: El plan es obligatorio.
+                  - field: code
+                    message: El código es obligatorio.
+                data: {}
+        '404':
+          description: El usuario no existe.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 404
+                error: El usuario no existe.  
+                data: {}
+        '409':
+          description: Ya existe una prepaga asociada al usuario.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 409
+                error: Ya existe una prepaga asociada al usuario.
+                data: {}
+        '500':
+          description: Error interno del servidor.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 500
+                error: Ocurrió un error inesperado.
+                data: {}
