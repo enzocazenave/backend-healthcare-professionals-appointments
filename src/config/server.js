@@ -23,14 +23,14 @@ class Server {
     this.app.use(express.json());
     this.app.use(morgan('dev'));
     this.app.use(cookieParser())
-    this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(YAML.load('./src/docs/swagger.yaml')));
+    this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(YAML.load('./src/docs/swagger.yaml'), { customSiteTitle: 'Healthcare Professionals Appointments API' }));
   }
 
   setRoutes() {
     this.app.use('/auth', authRoutes);
     this.app.use('/user', userRoutes);
-    this.app.use('/appointment', appointmentRoutes);
-    this.app.use('/specialty', specialtyRoutes);
+    this.app.use('/appointments', appointmentRoutes);
+    this.app.use('/specialties', specialtyRoutes);
   }
 
   start() {

@@ -567,10 +567,10 @@ paths:
                 error: Ocurrió un error inesperado.
                 data: {}
   
-  /specialty:
+  /specialties:
     get:
       tags:
-        - Especialidad
+        - Especialidades
       summary: Obtener todas las especialidades.
       security:
         - bearerAuth: []
@@ -614,7 +614,7 @@ paths:
                 data: {}
     post:
       tags:
-        - Especialidad
+        - Especialidades
       summary: Crear una especialidad.
       security:
         - bearerAuth: []
@@ -681,10 +681,10 @@ paths:
                 status: 500
                 error: Ocurrió un error inesperado.
                 data: {}
-  /specialty/{specialtyId}/professionals:
+  /specialties/{specialtyId}/professionals:
     get:
       tags:
-        - Especialidad
+        - Especialidades
       summary: Obtener todos los profesionales asociados a una especialidad.
       security:
         - bearerAuth: []
@@ -750,10 +750,10 @@ paths:
                 status: 500
                 error: Ocurrió un error inesperado.
                 data: {}
-  /specialty/professionals/{professionalId}:
+  /specialties/professionals/{professionalId}:
     post:
       tags:
-        - Especialidad
+        - Especialidades
       summary: Añadir un profesional a una especialidad.
       security:
         - bearerAuth: []
@@ -837,7 +837,7 @@ paths:
                 data: {}
     delete:
       tags:
-        - Especialidad
+        - Especialidades
       summary: Eliminar un profesional de una especialidad.
       security:
         - bearerAuth: []
@@ -910,10 +910,10 @@ paths:
                 status: 500
                 error: Ocurrió un error inesperado.
                 data: {}
-  /specialty/{specialtyId}:
+  /specialties/{specialtyId}:
     delete:
       tags:
-        - Especialidad
+        - Especialidades
       summary: Eliminar una especialidad.
       security:
         - bearerAuth: []
@@ -974,10 +974,10 @@ paths:
                 status: 500
                 error: Ocurrió un error inesperado.
                 data: {}
-  /appointment:
+  /appointments:
     post:
       tags:
-        - Turno
+        - Turnos
       summary: Crear un turno.
       security:
         - bearerAuth: []
@@ -1103,11 +1103,84 @@ paths:
                 status: 500
                 error: Ocurrió un error inesperado. 
                 data: {}
-  /appointment/professionals/{professionalId}:
+  /appointments/{appointmentId}:
+    delete:
+      tags:
+        - Turnos
+      summary: Cancelar un turno.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: appointmentId
+          required: true
+          schema:
+            type: integer
+            format: int32
+          description: El id del turno.
+          example: 1
+      responses:
+        '200':
+          description: Se ha cancelado correctamente el turno.
+          content:
+            application/json:
+              example:
+                ok: true
+                status: 200
+                error: null
+                data: El turno ha sido cancelado correctamente.
+        '400':
+          description: El cuerpo de la petición no es válido.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 400
+                error: 
+                  - field: appointmentId
+                    message: El appointmentId es obligatorio.
+                data: {}
+        '401':
+          description: Error de autenticación.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 401
+                error: Acceso no autorizado, falta el token de autenticación.
+                data: {}
+        '404':
+          description: El turno no existe.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 404
+                error: El turno no existe.
+                data: {}
+        '409':
+          description: El turno ya fue cancelado.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 409
+                error: El turno ya fue cancelado.
+                data: {}
+        '500':
+          description: Error interno del servidor.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 500
+                error: Ocurrió un error inesperado. 
+                data: {}
+  /appointments/professionals/{professionalId}:
     get:
       tags:
-        - Turno
-      summary: Obtener todos los turnos de un profesional.
+        - Turnos
+      summary: Obtener todos los turnos cancelados, reservados o completados de un profesional.
       security:
         - bearerAuth: []
       parameters:
@@ -1118,6 +1191,30 @@ paths:
             type: integer
             format: int32
           description: El id del profesional.
+          example: 1
+        - in: query
+          name: startDate
+          required: true
+          schema:
+            type: string
+            format: date
+          description: La fecha de inicio de busqueda.
+          example: 2022-03-21
+        - in: query
+          name: endDate
+          required: true
+          schema:
+            type: string
+            format: date
+          description: La fecha de finalización de busqueda.
+          example: 2022-03-21
+        - in: query
+          name: patientId
+          required: false
+          schema:
+            type: integer
+            format: int32
+          description: El id del paciente.
           example: 1
       responses:
         '200':
@@ -1133,8 +1230,11 @@ paths:
                     date: 2022-03-21
                     start_time: 08:00:00
                     end_time: 09:00:00
+                    status: Scheduled
+                    notes: null
                     specialty:
                       - name: Pediatria
+                    
         '400':
           description: El cuerpo de la petición no es válido.
           content:
@@ -1163,6 +1263,98 @@ paths:
                 ok: false
                 status: 404
                 error: El profesional no existe.
+                data: {}
+        '500':
+          description: Error interno del servidor.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 500
+                error: Ocurrió un error inesperado. 
+                data: {}
+  /appointments/patients/{patientId}:
+    get:
+      tags:
+        - Turnos
+      summary: Obtener todos los turnos cancelados, reservados o completados de un paciente.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: patientId
+          required: true
+          schema:
+            type: integer
+            format: int32
+          description: El id del paciente.
+          example: 1
+        - in: query
+          name: startDate
+          required: true
+          schema:
+            type: string
+            format: date
+          description: La fecha de inicio de busqueda.
+          example: 2022-03-21
+        - in: query
+          name: endDate
+          required: true
+          schema:
+            type: string
+            format: date
+          description: La fecha de finalización de busqueda.
+          example: 2022-03-21
+      responses:
+        '200':
+          description: Se han obtenido todos los turnos de un paciente.
+          content:
+            application/json:
+              example:
+                ok: true
+                status: 200
+                error: null
+                data:
+                  - id: 1
+                    date: 2022-03-21
+                    start_time: 08:00:00
+                    end_time: 09:00:00
+                    status: Scheduled
+                    notes: null
+                    specialty:
+                      - name: Pediatria
+                    professional:
+                      full_name: Juan Perez
+                      email: juanperez@gmail.com
+                      phone_number: +5698989898
+        '400':
+          description: El cuerpo de la petición no es válido.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 400
+                error: 
+                  - field: patientId
+                    message: El patientId es obligatorio.
+                data: {}
+        '401':
+          description: Error de autenticación.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 401
+                error: Acceso no autorizado, falta el token de autenticación.
+                data: {}
+        '404':
+          description: El paciente no existe.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 404
+                error: El paciente no existe.
                 data: {}
         '500':
           description: Error interno del servidor.
