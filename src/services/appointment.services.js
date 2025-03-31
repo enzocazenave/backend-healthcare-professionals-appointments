@@ -111,6 +111,47 @@ const appointmentServices = {
     } catch (error) {
       throw error;
     }
+  },
+  
+  getAppointmentsByProfessional: async ({ professionalId }) => {
+    try {
+      const professional = await User.findOne({ where: { id: professionalId, role_id: 2 } });
+
+      if (!professional) throw {
+        layer: 'appointmentServices',
+        key: 'PROFESSIONAL_NOT_FOUND',
+        statusCode: 404
+      }
+
+      const date = new Date();
+      const currentDate = date.toISOString().split('T')[0];
+      const currentTime = date.toTimeString().split(' ')[0];
+
+      const appointments = await Appointment.findAll({
+        where: {
+          professional_id: professionalId,
+          status: 'Scheduled',
+          date: { [Sequelize.Op.gte]: currentDate },
+          [Sequelize.Op.or]: [
+            { date: { [Sequelize.Op.gt]: currentDate } },
+            { date: currentDate, start_time: { [Sequelize.Op.gt]: currentTime } }
+          ]
+        },
+        attributes: { exclude: ['professional_id', 'patient_id', 'specialty_id', 'notes', 'status'] },
+        include: [
+          {
+            model: Specialty,
+            as: 'specialty',
+            attributes: ['name']
+          }
+        ]
+      });
+
+      return appointments;
+    } catch (error) {
+      console.log(error)
+      throw error;
+    }
   }
 }
 

@@ -59,8 +59,8 @@ const Appointment = sequelize.define('appointment', {
   tableName: 'appointments'
 });
 
-Appointment.belongsTo(User, { foreignKey: 'professional_id' });
-Appointment.belongsTo(User, { foreignKey: 'patient_id' });
+Appointment.belongsTo(User, { foreignKey: 'professional_id', as: 'professional' });
+Appointment.belongsTo(User, { foreignKey: 'patient_id', as: 'patient' });
 Appointment.belongsTo(Specialty, { foreignKey: 'specialty_id' });
 
 export default Appointment;

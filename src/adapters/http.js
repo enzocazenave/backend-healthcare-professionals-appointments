@@ -12,7 +12,7 @@ const sendSuccessResponse = (res = response, statusCode, data = {}) => {
 
 const sendErrorResponse = (res = response, statusCode, error = {}) => {
   const formattedError = error.layer && formatError(error)
-
+  
   const formattedResponse = {
     ok: false,
     status: formattedError ? statusCode : 500,

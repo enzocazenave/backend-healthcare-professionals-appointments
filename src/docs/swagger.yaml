@@ -1103,3 +1103,73 @@ paths:
                 status: 500
                 error: Ocurrió un error inesperado. 
                 data: {}
+  /appointment/professionals/{professionalId}:
+    get:
+      tags:
+        - Turno
+      summary: Obtener todos los turnos de un profesional.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: professionalId
+          required: true
+          schema:
+            type: integer
+            format: int32
+          description: El id del profesional.
+          example: 1
+      responses:
+        '200':
+          description: Se han obtenido todos los turnos de un profesional.
+          content:
+            application/json:
+              example:
+                ok: true
+                status: 200
+                error: null
+                data:
+                  - id: 1
+                    date: 2022-03-21
+                    start_time: 08:00:00
+                    end_time: 09:00:00
+                    specialty:
+                      - name: Pediatria
+        '400':
+          description: El cuerpo de la petición no es válido.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 400
+                error: 
+                  - field: professionalId
+                    message: El profesionalId es obligatorio.
+                data: {}
+        '401':
+          description: Error de autenticación.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 401
+                error: Acceso no autorizado, falta el token de autenticación.
+                data: {}
+        '404':
+          description: El profesional no existe.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 404
+                error: El profesional no existe.
+                data: {}
+        '500':
+          description: Error interno del servidor.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 500
+                error: Ocurrió un error inesperado. 
+                data: {}

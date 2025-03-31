@@ -16,6 +16,17 @@ const appointmentControllers = {
     } catch(error) {
       sendErrorResponse(res, error?.statusCode, error);
     }
+  },
+  
+  getAppointmentsByProfessional: async (req = request, res = response) => {
+    try {
+      const response = await appointmentServices.getAppointmentsByProfessional({
+        professionalId: req.params.professionalId
+      });
+      sendSuccessResponse(res, 200, response);
+    } catch(error) {
+      sendErrorResponse(res, error?.statusCode, error);
+    }
   }
 }
 
