@@ -974,3 +974,132 @@ paths:
                 status: 500
                 error: Ocurrió un error inesperado.
                 data: {}
+  /appointment:
+    post:
+      tags:
+        - Turno
+      summary: Crear un turno.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                professionalId:
+                  type: integer
+                  format: int32
+                  description: El id del profesional.
+                  example: 1
+                patientId:
+                  type: integer
+                  format: int32
+                  description: El id del paciente.
+                  example: 1
+                specialtyId:
+                  type: integer
+                  format: int32
+                  description: El id de la especialidad.
+                  example: 1
+                date:
+                  type: string
+                  format: date
+                  description: La fecha del turno.
+                  example: 2022-03-21
+                startTime:
+                  type: string
+                  format: time
+                  description: La hora de inicio del turno.
+                  example: 08:00:00
+                endTime:
+                  type: string
+                  format: time
+                  description: La hora de finalización del turno.
+                  example: 09:00:00
+      responses:
+        '201':
+          description: Se ha creado correctamente el turno.
+          content:
+            application/json:
+              example:
+                ok: true
+                status: 201
+                error: null
+                data:
+                  id: 1
+                  professional_id: 1
+                  patient_id: 1
+                  specialty_id: 1
+                  date: 2022-03-21
+                  start_time: 08:00:00
+                  end_time: 09:00:00
+                  status: Scheduled
+                  notes: null
+        '400':
+          description: El cuerpo de la petición no es válido.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 400
+                error: 
+                  - field: professionalId
+                    message: El profesionalId es obligatorio.
+                  - field: patientId
+                    message: El patientId es obligatorio.
+                  - field: specialtyId
+                    message: El specialtyId es obligatorio.
+                  - field: date
+                    message: La fecha es obligatoria.
+                  - field: startTime
+                    message: La hora de inicio es obligatoria.
+                  - field: endTime
+                    message: La hora de finalización es obligatoria.
+                data: {}
+        '401':
+          description: Error de autenticación.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 401
+                error: Acceso no autorizado, falta el token de autenticación.
+                data: {}
+        '403':
+          description: El usuario no tiene permiso para crear turnos.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 403
+                error: El usuario no tiene permiso para crear turnos. 
+                data: {}
+        '404':
+          description: Uno o varios de los ids no existe.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 404
+                error: Uno o varios de los ids no existe.
+                data: {}
+        '409':
+          description: El turno está reservado.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 409
+                error: El turno está reservado.
+                data: {}
+        '500':
+          description: Error interno del servidor.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 500
+                error: Ocurrió un error inesperado. 
+                data: {}

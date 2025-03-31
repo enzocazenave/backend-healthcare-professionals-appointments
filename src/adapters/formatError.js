@@ -1,3 +1,5 @@
+import { TIME } from "sequelize";
+
 const errors = {
   middlewareFieldValidator: {
     FULL_NAME_IS_REQUIRED: 'El nombre completo es obligatorio.',
@@ -45,7 +47,10 @@ const errors = {
     PATIENT_NOT_FOUND: 'El paciente no existe.',
     SPECIALTY_NOT_FOUND: 'La especialidad no existe.',
     PROFESSIONAL_DOES_NOT_HAVE_SPECIALTY: 'El profesional no tiene esa especialidad.',
-    TIME_SLOT_IS_RESERVED: 'El turno está reservado.'
+    TIME_SLOT_IS_RESERVED: 'El turno está reservado.',
+    TIME_SLOT_IS_NOT_IN_PROFESSIONAL_SCHEDULE: 'El turno no está en el horario del profesional.',
+    PROFESSIONAL_DOES_NOT_WORK_ON_THAT_DAY: 'El profesional no trabaja ese día.',
+    USER_DOES_NOT_HAVE_PERMISSION: 'El usuario no tiene permiso para crear turnos.'
   },
   specialtyServices: {
     SPECIALTY_NOT_FOUND: 'La especialidad no existe.',
