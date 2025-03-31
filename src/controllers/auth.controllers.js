@@ -25,7 +25,7 @@ const authControllers = {
         token: response.token
       });
     } catch(error) {
-      sendErrorResponse(res, 400, error);
+      sendErrorResponse(res, error?.statusCode, error);
     }
   },
 
@@ -49,7 +49,7 @@ const authControllers = {
         token: response.token
       });
     } catch(error) {
-      sendErrorResponse(res, 400, error);
+      sendErrorResponse(res, error?.statusCode, error);
     }
   },
 
@@ -57,35 +57,35 @@ const authControllers = {
     try {
       const refreshToken = req.cookies.refreshToken;
 
-      if (!refreshToken) throw { layer: 'authControllers', key: 'REFRESH_TOKEN_IS_REQUIRED' }
+      if (!refreshToken) throw { layer: 'authControllers', key: 'REFRESH_TOKEN_IS_REQUIRED', statusCode: 401 }  
 
       const response = await authServices.refreshToken(refreshToken);
       sendSuccessResponse(res, 200, response);
     } catch(error) {
-      sendErrorResponse(res, 403, error);
+      sendErrorResponse(res, error?.statusCode, error);
     }
   },
 
   logout: async (req = request, res = response) => {
     try {
-      if (!req.cookies.refreshToken) throw { layer: 'authControllers', key: 'REFRESH_TOKEN_IS_REQUIRED' }
+      if (!req.cookies.refreshToken) throw { layer: 'authControllers', key: 'REFRESH_TOKEN_IS_REQUIRED', statusCode: 401 }
       
       res.clearCookie('refreshToken');
       sendSuccessResponse(res, 200, "Sesión cerrada correctamente.");
     } catch(error) {
-      sendErrorResponse(res, 403, error);
+      sendErrorResponse(res, error?.statusCode, error);
     }
   },
 
   forgotPassword: async (req = request, res = response) => {
     try {
-      const response = await authServices.forgotPassword({
+      await authServices.forgotPassword({
         email: req.body.email
       });
 
-      sendSuccessResponse(res, 200, response);
+      sendSuccessResponse(res, 200, {});
     } catch(error) {
-      sendErrorResponse(res, 400, error);
+      sendErrorResponse(res, error?.statusCode, error);
     }
   },
 
@@ -99,7 +99,7 @@ const authControllers = {
 
       sendSuccessResponse(res, 200, response);
     } catch(error) {
-      sendErrorResponse(res, 400, error);
+      sendErrorResponse(res, error?.statusCode, error);
     }
   }
 }

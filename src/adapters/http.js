@@ -15,7 +15,7 @@ const sendErrorResponse = (res = response, statusCode, error = {}) => {
 
   const formattedResponse = {
     ok: false,
-    status: statusCode,
+    status: formattedError ? statusCode : 500,
     error: formattedError ?? 'Ocurrió un error inesperado.',
     data: {}
   }

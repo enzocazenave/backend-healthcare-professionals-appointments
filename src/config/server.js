@@ -3,8 +3,8 @@ import cors from 'cors';
 import http from 'http';
 import morgan from 'morgan';
 import swaggerUi from 'swagger-ui-express';
-import swaggerSpec from './swagger.js';
 import cookieParser from 'cookie-parser';
+import YAML from 'yamljs';
 
 import authRoutes from '../routes/auth.routes.js'
 import userRoutes from '../routes/user.routes.js'  
@@ -21,7 +21,7 @@ class Server {
     this.app.use(express.json());
     this.app.use(morgan('dev'));
     this.app.use(cookieParser())
-    this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+    this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(YAML.load('./src/docs/swagger.yaml')));
   }
 
   setRoutes() {

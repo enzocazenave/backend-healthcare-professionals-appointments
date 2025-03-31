@@ -1,7 +1,6 @@
 import { request, response } from 'express'
 import { sendErrorResponse, sendSuccessResponse } from '../adapters/http.js';
 import userServices from '../services/user.services.js';
-import authControllers from './auth.controllers.js';
 
 const userControllers = {
   getUserById: async (req = request, res = response) => {
@@ -10,7 +9,7 @@ const userControllers = {
 
       sendSuccessResponse(res, 200, user);
     } catch(error) {
-      sendErrorResponse(res, 400, error);
+      sendErrorResponse(res, error?.statusCode, error);
     }
   },
 
@@ -20,7 +19,7 @@ const userControllers = {
 
       sendSuccessResponse(res, 200, user);
     } catch(error) {
-      sendErrorResponse(res, 400, error);
+      sendErrorResponse(res, error?.statusCode, error);
     }
   },
 
@@ -30,7 +29,7 @@ const userControllers = {
 
       sendSuccessResponse(res, 200, user);
     } catch(error) {
-      sendErrorResponse(res, 400, error);
+      sendErrorResponse(res, error?.statusCode, error);
     }
   },
 
@@ -40,7 +39,7 @@ const userControllers = {
       
       sendSuccessResponse(res, 200, user);
     } catch(error) {
-      sendErrorResponse(res, 400, error);
+      sendErrorResponse(res, error?.statusCode, error);
     }
   }
 }
