@@ -17,7 +17,9 @@ const errors = {
     SPECIALTY_ID_IS_REQUIRED: 'El id de la especialidad es obligatorio.',
     DATE_IS_REQUIRED: 'La fecha es obligatoria.',
     START_TIME_IS_REQUIRED: 'La hora de inicio es obligatoria.',
-    END_TIME_IS_REQUIRED: 'La hora de finalización es obligatoria.'
+    END_TIME_IS_REQUIRED: 'La hora de finalización es obligatoria.',
+    START_DATE_IS_REQUIRED: 'La fecha de inicio es obligatoria.',
+    END_DATE_IS_REQUIRED: 'La fecha de finalización es obligatoria.'
   },
   middlewareTokenValidator: {
     TOKEN_NOT_FOUND: 'Acceso no autorizado, no se encontró el token.',
@@ -50,7 +52,9 @@ const errors = {
     TIME_SLOT_IS_RESERVED: 'El turno está reservado.',
     TIME_SLOT_IS_NOT_IN_PROFESSIONAL_SCHEDULE: 'El turno no está en el horario del profesional.',
     PROFESSIONAL_DOES_NOT_WORK_ON_THAT_DAY: 'El profesional no trabaja ese día.',
-    USER_DOES_NOT_HAVE_PERMISSION: 'El usuario no tiene permiso para crear turnos.'
+    USER_DOES_NOT_HAVE_PERMISSION: 'El usuario no tiene permiso para crear turnos.',
+    APPOINTMENT_NOT_FOUND: 'El turno no existe.',
+    APPOINTMENT_ALREADY_CANCELLED: 'El turno ya fue cancelado.'
   },
   specialtyServices: {
     SPECIALTY_NOT_FOUND: 'La especialidad no existe.',

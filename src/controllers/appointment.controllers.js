@@ -16,6 +16,57 @@ const appointmentControllers = {
     } catch(error) {
       sendErrorResponse(res, error?.statusCode, error);
     }
+  },
+  
+  getAppointmentsByProfessional: async (req = request, res = response) => {
+    try {
+      const response = await appointmentServices.getAppointmentsByProfessional({
+        professionalId: req.params.professionalId,
+        startDate: req.query.startDate,
+        endDate: req.query.endDate,
+        patientId: req.query.patientId
+      });
+      sendSuccessResponse(res, 200, response);
+    } catch(error) {
+      sendErrorResponse(res, error?.statusCode, error);
+    }
+  },
+
+  getAppointmentsByPatient: async (req = request, res = response) => {
+    try {
+      const response = await appointmentServices.getAppointmentsByPatient({
+        patientId: req.params.patientId,
+        startDate: req.query.startDate,
+        endDate: req.query.endDate
+      });
+      sendSuccessResponse(res, 200, response);
+    } catch(error) {
+      sendErrorResponse(res, error?.statusCode, error);
+    }
+  },
+
+  cancelAppointment: async (req = request, res = response) => {
+    try {
+      const response = await appointmentServices.cancelAppointment({
+        appointmentId: req.params.appointmentId
+      });
+      sendSuccessResponse(res, 200, response);
+    } catch(error) {
+      sendErrorResponse(res, error?.statusCode, error);
+    }
+  },
+
+  getAvailabilityByProfessionalId: async (req = request, res = response) => {
+    try {
+      const response = await appointmentServices.getAvailabilityByProfessionalId({
+        professionalId: req.params.professionalId,
+        startDate: req.query.startDate,
+        endDate: req.query.endDate
+      });
+      sendSuccessResponse(res, 200, response);
+    } catch(error) {
+      sendErrorResponse(res, error?.statusCode, error);
+    }
   }
 }
 
