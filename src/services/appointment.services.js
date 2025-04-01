@@ -6,6 +6,7 @@ import ProfessionalScheduleBlock from '../models/ProfessionalScheduleBlock.js';
 import User from '../models/User.js';
 import Appointment from '../models/Appointment.js';
 import Specialty from '../models/Specialty.js';
+import { eachDayOfInterval, format, parse } from 'date-fns';
 
 const appointmentServices = {
   create: async ({ professionalId, patientId, specialtyId, date, startTime, endTime }, user) => {
@@ -238,9 +239,16 @@ const appointmentServices = {
         statusCode: 404
       }
 
-      startDate = new Date(startDate);
-      endDate = new Date(endDate);
+      const startDateRange = parse(startDate, 'yyyy-MM-dd', new Date());
+      const endDateRange = parse(endDate, 'yyyy-MM-dd', new Date());
       
+      const dateRange = eachDayOfInterval({
+        start: startDateRange,
+        end: endDateRange
+      }).map(date => format(date, 'yyyy-MM-dd'));
+
+      //TODO: Implementar calculo de disponibiilidad de un profesional
+
       return [];
     } catch (error) {
       console.log(error)
