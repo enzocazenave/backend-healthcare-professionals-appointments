@@ -93,6 +93,17 @@ CREATE TABLE professional_schedule_blocks (
   FOREIGN KEY (professional_user_id) REFERENCES users(id)
 );
 
+CREATE TABLE appointment_states (
+  id INT IDENTITY,
+  name VARCHAR(50) NOT NULL,
+  
+  PRIMARY KEY(id)
+);
+
+INSERT INTO appointment_states (name) VALUES('Scheduled');
+INSERT INTO appointment_states (name) VALUES('Cancelled');
+INSERT INTO appointment_states (name) VALUES('Completed');
+
 CREATE TABLE appointments (
   id INT IDENTITY,
   professional_user_id INT NOT NULL,
@@ -110,15 +121,6 @@ CREATE TABLE appointments (
   FOREIGN KEY (specialty_id) REFERENCES specialties(id),
   FOREIGN KEY (appointment_state_id) REFERENCES appointment_states(id)
 );
-
-CREATE TABLE appointment_states (
-  id INT IDENTITY,
-  name
-);
-
-INSERT INTO appointment_states (name) VALUES('Scheduled');
-INSERT INTO appointment_states (name) VALUES('Cancelled');
-INSERT INTO appointment_states (name) VALUES('Completed');
 
 CREATE TABLE notifications (
   id INT IDENTITY,
