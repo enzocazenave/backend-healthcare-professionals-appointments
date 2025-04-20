@@ -10,6 +10,7 @@ import authRoutes from '../routes/auth.routes.js'
 import userRoutes from '../routes/user.routes.js'  
 import appointmentRoutes from '../routes/appointment.routes.js'
 import specialtyRoutes from '../routes/specialty.routes.js'
+import scheduleRoutes from '../routes/schedule.routes.js'
 
 class Server {
   constructor() {
@@ -31,6 +32,7 @@ class Server {
     this.app.use('/user', userRoutes);
     this.app.use('/appointments', appointmentRoutes);
     this.app.use('/specialties', specialtyRoutes);
+    this.app.use('/schedules', scheduleRoutes);
   }
 
   start() {
