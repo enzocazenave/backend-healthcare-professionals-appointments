@@ -1,5 +1,3 @@
-import { TIME } from "sequelize";
-
 const errors = {
   middlewareFieldValidator: {
     FULL_NAME_IS_REQUIRED: 'El nombre completo es obligatorio.',
@@ -10,7 +8,7 @@ const errors = {
     USER_ID_IS_REQUIRED: 'El id de usuario es obligatorio.',
     NAME_IS_REQUIRED: 'El nombre es obligatorio.',
     PLAN_IS_REQUIRED: 'El plan es obligatorio.',
-    CODE_IS_REQUIRED: 'El código es obligatorio.',
+    NUMBER_IS_REQUIRED: 'El código es obligatorio.',
     PHONE_NUMBER_IS_REQUIRED: 'El número de teléfono debe ser un string.',
     PROFESSIONAL_ID_IS_REQUIRED: 'El id del profesional es obligatorio.',
     PATIENT_ID_IS_REQUIRED: 'El id del paciente es obligatorio.',
@@ -19,7 +17,14 @@ const errors = {
     START_TIME_IS_REQUIRED: 'La hora de inicio es obligatoria.',
     END_TIME_IS_REQUIRED: 'La hora de finalización es obligatoria.',
     START_DATE_IS_REQUIRED: 'La fecha de inicio es obligatoria.',
-    END_DATE_IS_REQUIRED: 'La fecha de finalización es obligatoria.'
+    END_DATE_IS_REQUIRED: 'La fecha de finalización es obligatoria.',
+    APPOINTMENT_ID_IS_REQUIRED: 'El id del turno es obligatorio.',
+    DAY_OF_WEEK_IS_REQUIRED: 'El día de la semana es obligatorio.',
+    APPOINTMENT_DURATION_IS_REQUIRED: 'La duración del turno es obligatoria.',
+    PROFESSIONAL_SCHEDULE_ID_IS_REQUIRED: 'El id de la programación del profesional es obligatorio.',
+    REASON_IS_REQUIRED: 'La razón es obligatoria.',
+    PROFESSIONAL_SCHEDULE_BLOCK_ID_IS_REQUIRED: 'El id de la programación de bloque del profesional es obligatorio.',
+    PREPAID_ID_IS_REQUIRED: 'El id de la prepaga es obligatorio.',
   },
   middlewareTokenValidator: {
     TOKEN_NOT_FOUND: 'Acceso no autorizado, no se encontró el token.',
@@ -42,7 +47,10 @@ const errors = {
   },
   userServices: {
     USER_NOT_FOUND: 'El usuario no existe.',
-    PREPAID_ALREADY_EXISTS: 'Ya existe una prepaga asociada al usuario.'
+    PREPAID_ALREADY_EXISTS: 'Ya existe una prepaga asociada al usuario.',
+    USER_ALREADY_AFFILIATED: 'El usuario ya está afiliado a la prepaga.',
+    USER_NOT_AFFILIATED: 'El usuario no está afiliado a la prepaga.',
+    PREPAID_NOT_FOUND: 'La prepaga no existe.'
   },
   appointmentServices: {
     PROFESSIONAL_NOT_FOUND: 'El profesional no existe.',
@@ -62,6 +70,16 @@ const errors = {
     SPECIALTY_DOES_NOT_HAVE_PROFESSIONAL: 'La especialidad no tiene profesionales asociados.',
     PROFESSIONAL_DOES_NOT_HAVE_SPECIALTY: 'El profesional no tiene esa especialidad.',
     PROFESSIONAL_NOT_FOUND: 'El profesional no existe.'
+  },
+  scheduleServices: {
+    PROFESSIONAL_NOT_FOUND: 'El profesional no existe.',
+    PROFESSIONAL_HAS_SCHEDULE_IN_THIS_HOUR_RANGE: 'El profesional ya tiene un horario en este rango de horas.',
+    PROFESSIONAL_SCHEDULE_NOT_FOUND: 'El horario del profesional no existe.',
+    PROFESSIONAL_SCHEDULE_BLOCK_NOT_FOUND: 'El bloqueo del horario del profesional no existe.',
+  },
+  prepaidServices: {
+    PREPAID_ALREADY_EXISTS: 'Ya existe una prepaga asociada al usuario.',
+    PREPAID_NOT_FOUND: 'La prepaga no existe.'
   }
 }
 

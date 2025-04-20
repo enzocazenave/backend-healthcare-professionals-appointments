@@ -1,6 +1,6 @@
 import { request, response } from 'express';
 import scheduleServices from '../services/schedule.services.js';
-import { sendSuccessResponse } from '../adapters/http.js';
+import { sendErrorResponse, sendSuccessResponse } from '../adapters/http.js';
 
 const scheduleControllers = {
   createProfessionalSchedule: async (req = request, res = response) => {

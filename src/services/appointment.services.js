@@ -1,12 +1,7 @@
 import { Sequelize } from 'sequelize';
 import getWeekday from '../utils/getWeekday.js';
-import ProfessionalSpecialty from '../models/ProfessionalSpecialty.js';
-import ProfessionalSchedule from '../models/ProfessionalSchedule.js';
-import ProfessionalScheduleBlock from '../models/ProfessionalScheduleBlock.js';
-import User from '../models/User.js';
-import Appointment from '../models/Appointment.js';
-import Specialty from '../models/Specialty.js';
 import { eachDayOfInterval, format, parse } from 'date-fns';
+import db from '../config/index.js';
 
 const appointmentServices = {
   create: async ({ professionalId, patientId, specialtyId, date, startTime, endTime }, user) => {
@@ -21,35 +16,35 @@ const appointmentServices = {
         }
       }
 
-      const professional = await User.findOne({ where: { id: professionalId, role_id: 2 } });
+      const professional = await db.User.findOne({ where: { id: professionalId, role_id: 2 } });
       if (!professional) throw {
         layer: 'appointmentServices',
         key: 'PROFESSIONAL_NOT_FOUND',
         statusCode: 404
       }
 
-      const patient = await User.findOne({ where: { id: patientId, role_id: 1 } });
+      const patient = await db.User.findOne({ where: { id: patientId, role_id: 1 } });
       if (!patient) throw {
         layer: 'appointmentServices',
         key: 'PATIENT_NOT_FOUND',
         statusCode: 404
       }
 
-      const specialty = await Specialty.findByPk(specialtyId);
+      const specialty = await db.Specialty.findByPk(specialtyId);
       if (!specialty) throw {
         layer: 'appointmentServices',
         key: 'SPECIALTY_NOT_FOUND',
         statusCode: 404
       }
 
-      const professionalHasSpecialty = await ProfessionalSpecialty.findOne({ where: { professional_id: professionalId, specialty_id: specialtyId } });
+      const professionalHasSpecialty = await db.ProfessionalSpecialty.findOne({ where: { professional_id: professionalId, specialty_id: specialtyId } });
       if (!professionalHasSpecialty) throw {
         layer: 'appointmentServices',
         key: 'PROFESSIONAL_DOES_NOT_HAVE_SPECIALTY',
         statusCode: 404
       }
 
-      const isTimeSlotInSchedule = await ProfessionalSchedule.findOne({
+      const isTimeSlotInSchedule = await db.ProfessionalSchedule.findOne({
         where: {
           professional_id: professionalId,
           day_of_week: getWeekday(new Date(date)),
@@ -66,7 +61,7 @@ const appointmentServices = {
         statusCode: 409
       }
 
-      const isTimeSlotInScheduleBlocks = await ProfessionalScheduleBlock.findOne({
+      const isTimeSlotInScheduleBlocks = await db.ProfessionalScheduleBlock.findOne({
         where: {
           professional_id: professionalId,
           day_of_week: getWeekday(new Date(date)),
@@ -83,7 +78,7 @@ const appointmentServices = {
         statusCode: 409
       }
 
-      const isTimeSlotReserved = await Appointment.findOne({
+      const isTimeSlotReserved = await db.Appointment.findOne({
         where: {
           professional_id: professionalId,
           date,
@@ -101,13 +96,14 @@ const appointmentServices = {
         statusCode: 409
       }
 
-      const appointment = await Appointment.create({
+      const appointment = await db.Appointment.create({
         professional_id: professionalId,
         patient_id: patientId,
         specialty_id: specialtyId,
         date,
         start_time: startTime,
-        end_time: endTime
+        end_time: endTime,
+        appointment_state_id: 1
       });
 
       return appointment.get({ plain: true });
@@ -118,7 +114,7 @@ const appointmentServices = {
   
   getAppointmentsByProfessional: async ({ professionalId, startDate, endDate, patientId }) => {
     try {
-      const professional = await User.findOne({ where: { id: professionalId, role_id: 2 } });
+      const professional = await db.User.findOne({ where: { id: professionalId, role_id: 2 } });
 
       if (!professional) throw {
         layer: 'appointmentServices',
@@ -127,7 +123,7 @@ const appointmentServices = {
       }
 
       if (patientId) {
-        const patient = await User.findOne({ where: { id: patientId, role_id: 1 } });
+        const patient = await db.User.findOne({ where: { id: patientId, role_id: 1 } });
         if (!patient) throw {
           layer: 'appointmentServices',
           key: 'PATIENT_NOT_FOUND',
@@ -147,12 +143,12 @@ const appointmentServices = {
         whereClause.patient_id = patientId;
       }
       
-      const appointments = await Appointment.findAll({
+      const appointments = await db.Appointment.findAll({
         where: whereClause,
         attributes: { exclude: ['professional_id', 'patient_id', 'specialty_id' ] },
         include: [
           {
-            model: Specialty,
+            model: db.Specialty,
             as: 'specialty',
             attributes: ['name']
           }
@@ -168,7 +164,7 @@ const appointmentServices = {
   
   getAppointmentsByPatient: async ({ patientId, startDate, endDate }) => {
     try {
-      const patient = await User.findOne({ where: { id: patientId, role_id: 1 } });
+      const patient = await db.User.findOne({ where: { id: patientId, role_id: 1 } });
 
       if (!patient) throw {
         layer: 'appointmentServices',
@@ -179,7 +175,7 @@ const appointmentServices = {
       startDate = new Date(startDate);
       endDate = new Date(endDate);
       
-      const appointments = await Appointment.findAll({
+      const appointments = await db.Appointment.findAll({
         where: {
           patient_id: patientId,
           date: { [Sequelize.Op.gte]: startDate, [Sequelize.Op.lte]: endDate }
@@ -187,12 +183,12 @@ const appointmentServices = {
         attributes: { exclude: ['professional_id', 'patient_id', 'specialty_id' ] },
         include: [
           {
-            model: Specialty,
+            model: db.Specialty,
             as: 'specialty',
             attributes: ['name']
           },
           {
-            model: User,
+            model: db.User,
             as: 'professional',
             attributes: ['full_name', 'email', 'phone_number']
           }
@@ -207,7 +203,7 @@ const appointmentServices = {
   
   cancelAppointment: async ({ appointmentId }) => {
     try {
-      const appointment = await Appointment.findByPk(appointmentId);
+      const appointment = await db.Appointment.findByPk(appointmentId);
 
       if (!appointment) throw {
         layer: 'appointmentServices',
@@ -221,7 +217,7 @@ const appointmentServices = {
         statusCode: 409
       }
 
-      await appointment.update({ status: 'Cancelled' });
+      await appointment.update({ appointment_state_id: 2 });
 
       return "El turno fue cancelado con éxito.";
     } catch (error) {
@@ -231,7 +227,7 @@ const appointmentServices = {
 
   getAvailabilityByProfessionalId: async ({ professionalId, startDate, endDate }) => {
     try {
-      const professional = await User.findOne({ where: { id: professionalId, role_id: 2 } });
+      const professional = await db.User.findOne({ where: { id: professionalId, role_id: 2 } });
 
       if (!professional) throw {
         layer: 'appointmentServices',

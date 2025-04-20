@@ -13,10 +13,30 @@ const userControllers = {
     }
   },
 
+  getPrepaids: async (req = request, res = response) => {
+    try {
+      const prepaids = await userServices.getPrepaids(req.user.userId);
+
+      sendSuccessResponse(res, 200, prepaids);
+    } catch(error) {
+      sendErrorResponse(res, error?.statusCode, error);
+    }
+  },
+
   addPrepaid: async (req = request, res = response) => {
     try {
       const user = await userServices.addPrepaid(req.user.userId, req.body);
 
+      sendSuccessResponse(res, 200, user);
+    } catch(error) {
+      sendErrorResponse(res, error?.statusCode, error);
+    }
+  },
+
+  deletePrepaid: async (req = request, res = response) => {
+    try {
+      const user = await userServices.deletePrepaid(req.user.userId, req.body);
+      
       sendSuccessResponse(res, 200, user);
     } catch(error) {
       sendErrorResponse(res, error?.statusCode, error);

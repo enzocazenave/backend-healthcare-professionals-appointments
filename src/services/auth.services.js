@@ -1,17 +1,15 @@
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import { compareSync, genSaltSync, hashSync } from 'bcryptjs';
-import User from '../models/User.js';
-import PasswordResetCode from '../models/PasswordResetCode.js';
 import generateToken from '../utils/generateToken.js';
 import { Sequelize } from 'sequelize';
 import sendMail from '../utils/sendMail.js';
-import { stat } from 'fs';
+import db from '../config/index.js';
 
 const authServices = {
   register: async ({ fullName, email, password, role_id }) => {
     try {
-      const isEmailAlreadyRegistered = await User.findOne({ where: { email: email }, paranoid: false });
+      const isEmailAlreadyRegistered = await db.User.findOne({ where: { email: email }, paranoid: false });
 
       if (isEmailAlreadyRegistered) throw {
         layer: 'authServices',
@@ -21,7 +19,7 @@ const authServices = {
       
       const hashedPassword = hashSync(password, genSaltSync());
 
-      const user = await User.create({
+      const user = await db.User.create({
         full_name: fullName,
         email: email,
         password: hashedPassword,
@@ -57,7 +55,7 @@ const authServices = {
 
   login: async ({ email, password }) => {
     try {
-      const user = await User.findOne({ where: { email: email } });
+      const user = await db.User.findOne({ where: { email: email } });
 
       if (!user) throw { 
         layer: 'authServices', 
@@ -117,7 +115,7 @@ const authServices = {
 
   forgotPassword: async ({ email }) => {
     try {
-      const user = await User.findOne({ where: { email: email } });
+      const user = await db.User.findOne({ where: { email: email } });
 
       if (!user) throw { 
         layer: 'authServices', 
@@ -125,7 +123,7 @@ const authServices = {
         statusCode: 404
       }
 
-      await PasswordResetCode.destroy({ 
+      await db.PasswordResetCode.destroy({ 
         where: {
           expirates_at: {
             [Sequelize.Op.lt]: new Date()
@@ -133,7 +131,7 @@ const authServices = {
         } 
       });
 
-      await PasswordResetCode.destroy({ where: { email: email } });
+      await db.PasswordResetCode.destroy({ where: { email: email } });
 
       const code = crypto.randomInt(100000, 999999).toString();
       const currentTime = new Date().getTime();
@@ -147,7 +145,7 @@ const authServices = {
 
       await sendMail(email, 'Código de recuperación de contraseña', emailBody);
 
-      await PasswordResetCode.create({
+      await db.PasswordResetCode.create({
         code,
         email,
         expirates_at: codeExpiration
@@ -161,7 +159,7 @@ const authServices = {
 
   resetPassword: async ({ email, password, code  }) => { 
     try {
-      const passwordResetCode = await PasswordResetCode.findOne({ where: { code, email } });
+      const passwordResetCode = await db.PasswordResetCode.findOne({ where: { code, email } });
 
       if (!passwordResetCode) throw { 
         layer: 'authServices', 
@@ -179,8 +177,8 @@ const authServices = {
 
       const hashedPassword = hashSync(password, genSaltSync());
       
-      await User.update({ password: hashedPassword }, { where: { email: email } });
-      await PasswordResetCode.destroy({ where: { code, email } });
+      await db.User.update({ password: hashedPassword }, { where: { email: email } });
+      await db.PasswordResetCode.destroy({ where: { code, email } });
 
       return "La contraseña ha sido actualizada correctamente.";
     } catch(error) {

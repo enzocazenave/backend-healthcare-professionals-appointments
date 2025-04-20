@@ -8,20 +8,25 @@ const router = Router();
 
 router.get('/', [tokenValidator], userControllers.getUserById);
 
+router.get('/prepaids', [tokenValidator], userControllers.getPrepaids);
+
 router.post('/prepaid', [
   tokenValidator,
-  body('name', 'NAME_IS_REQUIRED').isString(),
+  body('prepaidId', 'PREPAID_ID_IS_REQUIRED').isInt({ min: 1 }),
   body('plan', 'PLAN_IS_REQUIRED').isString(),
-  body('code', 'CODE_IS_REQUIRED').isString(),
+  body('number', 'NUMBER_IS_REQUIRED').isString(),
   fieldValidator
 ], userControllers.addPrepaid);
+
+router.delete('/prepaid', [
+  tokenValidator,
+  body('prepaidId', 'PREPAID_ID_IS_REQUIRED').isInt({ min: 1 }),
+  fieldValidator
+], userControllers.deletePrepaid);
 
 router.patch('/', [
   tokenValidator,
   body('phoneNumber', 'PHONE_NUMBER_IS_REQUIRED').optional().isString(),
-  body('name', 'NAME_IS_REQUIRED').optional().isString(),
-  body('plan', 'PLAN_IS_REQUIRED').optional().isString(),
-  body('code', 'CODE_IS_REQUIRED').optional().isString(),
   fieldValidator
 ], userControllers.updateUserById);
 

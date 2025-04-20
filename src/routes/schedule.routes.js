@@ -20,7 +20,7 @@ router.post('/:professionalId', [
 
 router.get('/:professionalId', [
   tokenValidator,
-  param('professionalId', 'PROFES SIONAL_ID_IS_REQUIRED').isInt({ min: 1 }),
+  param('professionalId', 'PROFESSIONAL_ID_IS_REQUIRED').isInt({ min: 1 }),
   fieldValidator
 ], scheduleControllers.getProfessionalSchedules)
 

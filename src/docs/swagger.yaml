@@ -344,11 +344,6 @@ paths:
                   role:
                     id: 1
                     name: Usuario
-                  prepaid:
-                    id: 1
-                    name: Prepaga 1
-                    plan: Basic
-                    code: 123456
         '401':
           description: Error de autenticación.
           content:
@@ -389,9 +384,6 @@ paths:
           application/json:
             example:
               phoneNumber: +56987654321
-              name: Enzo
-              plan: Basic
-              code: 123456
       responses:
         '200':
           description: OK
@@ -412,12 +404,6 @@ paths:
                 error:
                   - field: phoneNumber
                     message: El número de teléfono debe ser un string.
-                  - field: name
-                    message: El nombre es obligatorio.
-                  - field: plan
-                    message: El plan es obligatorio.
-                  - field: code
-                    message: El código es obligatorio.
                 data: {}
         '401':
           description: Error de autenticación.
@@ -502,9 +488,9 @@ paths:
         content:
           application/json:
             example:
-              name: Prepaga 1
+              prepaidId: 1
               plan: Basic
-              code: 123456
+              number: 123456
       responses:
         '200':
           description: OK
@@ -523,11 +509,11 @@ paths:
                 ok: false
                 status: 400
                 error:
-                  - field: name
-                    message: El nombre es obligatorio.
+                  - field: prepaidId
+                    message: El id de la prepaga es obligatorio.
                   - field: plan
                     message: El plan es obligatorio.
-                  - field: code
+                  - field: number
                     message: El código es obligatorio.
                 data: {}
         '401':
@@ -549,13 +535,13 @@ paths:
                 error: El usuario no existe.  
                 data: {}
         '409':
-          description: Ya existe una prepaga asociada al usuario.
+          description: El usuario ya está afiliado a la prepaga.
           content:
             application/json:
               example:
                 ok: false
                 status: 409
-                error: Ya existe una prepaga asociada al usuario.
+                error: El usuario ya está afiliado a la prepaga.
                 data: {}
         '500':
           description: Error interno del servidor.
@@ -566,7 +552,131 @@ paths:
                 status: 500
                 error: Ocurrió un error inesperado.
                 data: {}
-  
+    delete:
+      summary: Eliminar afiliación a la prepaga.
+      description: Endpoint que permite eliminar la afiliación a la prepaga del usuario.
+      tags: [Usuario]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: integer
+            format: int32
+          description: El id del usuario.
+          example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                prepaidId:
+                  type: integer
+                  format: int32
+                  description: El id de la prepaga.
+                  example: 1
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              example:
+                ok: true
+                status: 200
+                error: null
+                data: "La afiliación a la prepaga ha sido eliminada correctamente."
+        '400':
+          description: El cuerpo de la petición no es válido.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 400
+                error:
+                  - field: prepaidId
+                    message: El id de la prepaga es obligatorio.
+                data: {}
+        '401':
+          description: Error de autenticación.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 401
+                error: Acceso no autorizado, falta el token de autenticación.
+                data: {}
+        '404':
+          description: La prepaga no existe.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 404
+                error: La prepaga no existe.
+                data: {}
+        '500':
+          description: Error interno del servidor.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 500
+                error: Ocurrió un error inesperado.
+                data: {}
+  /user/prepaids:
+    get:
+      summary: Obtener todos los prepagas asociados al usuario.
+      description: Endpoint que permite obtener todos los prepagas asociados al usuario.
+      tags: [Usuario]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              example:
+                ok: true
+                status: 200
+                error: null
+                data:
+                  - id: 1
+                    plan: B
+                    number: 123456
+                    prepaid:
+                      id: 1
+                      name: Prepaga 1
+        '401':
+          description: Error de autenticación.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 401
+                error: Acceso no autorizado, falta el token de autenticación.
+                data: {}
+        '404':
+          description: El usuario no existe.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 404
+                error: El usuario no existe.
+                data: {}
+        '500':
+          description: Error interno del servidor.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 500
+                error: Ocurrió un error inesperado.
+                data: {}
   /specialties:
     get:
       tags:
@@ -1773,15 +1883,6 @@ paths:
                 status: 404
                 error: El profesional no existe.
                 data: {}
-        '409':
-          description: El profesional ya está asociado a la especialidad.
-          content:
-            application/json:
-              example:
-                ok: false
-                status: 409
-                error: El profesional ya está asociado a la especialidad.
-                data: {}
         '500':
           description: Error interno del servidor.
           content:
@@ -1844,6 +1945,178 @@ paths:
                 ok: false
                 status: 404
                 error: El bloqueo del profesional no existe.
+                data: {}
+        '500':
+          description: Error interno del servidor.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 500
+                error: Ocurrió un error inesperado.
+                data: {}
+  /prepaids:
+    post:
+      tags:
+        - Prepagas
+      summary: Crear una prepaga.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: El nombre de la prepaga.
+                  example: Prepaga 1
+      responses:
+        '201':
+          description: Se ha creado correctamente la prepaga.
+          content:
+            application/json:
+              example:
+                ok: true
+                status: 201
+                error: null
+                data:
+                  id: 1
+                  name: Prepaga 1
+        '400':
+          description: El cuerpo de la petición no es válido.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 400
+                error: 
+                  - field: name
+                    message: El nombre es obligatorio.
+                data: {}
+        '401':
+          description: Error de autenticación.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 401
+                error: Acceso no autorizado, falta el token de autenticación.
+                data: {}
+        '409':
+          description: La prepaga ya existe.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 409
+                error: Ya existe una prepaga asociada al usuario.
+                data: {}
+        '500':
+          description: Error interno del servidor.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 500
+                error: Ocurrió un error inesperado.
+                data: {}
+    get:
+      tags:
+        - Prepagas
+      summary: Obtener todas las prepagas.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Se han obtenido todas las prepagas.
+          content:
+            application/json:
+              example:
+                ok: true
+                status: 200
+                error: null
+                data:
+                  - id: 1
+                    name: Prepaga 1
+                  - id: 2
+                    name: Prepaga 2
+                  - id: 3
+                    name: Prepaga 3
+        '401':
+          description: Error de autenticación.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 401
+                error: Acceso no autorizado, falta el token de autenticación.
+                data: {}
+        '500':
+          description: Error interno del servidor.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 500
+                error: Ocurrió un error inesperado.
+                data: {}
+  /prepaids/{prepaidId}:
+    delete:
+      tags:
+        - Prepagas
+      summary: Eliminar una prepaga.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: prepaidId
+          required: true
+          schema:
+            type: integer
+            format: int32
+          description: El id de la prepaga.
+          example: 1
+      responses:
+        '200':
+          description: Se ha eliminado correctamente la prepaga.
+          content:
+            application/json:
+              example:
+                ok: true
+                status: 200
+                error: null
+                data: La prepaga ha sido eliminada correctamente.
+        '400':
+          description: El cuerpo de la petición no es válido.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 400
+                error: 
+                  - field: prepaidId
+                    message: El id de la prepaga es obligatorio.
+                data: {}
+        '401':
+          description: Error de autenticación.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 401
+                error: Acceso no autorizado, falta el token de autenticación.
+                data: {}
+        '404':
+          description: La prepaga no existe.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 404
+                error: La prepaga no existe.
                 data: {}
         '500':
           description: Error interno del servidor.
