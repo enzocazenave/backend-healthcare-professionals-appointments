@@ -1365,3 +1365,492 @@ paths:
                 status: 500
                 error: Ocurrió un error inesperado. 
                 data: {}
+  /schedules/{professionalId}:
+    get:
+      tags:
+        - Horarios del Profesional
+      summary: Obtener todos los horarios del profesional.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: professionalId
+          required: true
+          schema:
+            type: integer
+            format: int32
+          description: El id del profesional.
+          example: 1
+      responses:
+        '200':
+          description: Se han obtenido todos los horarios del profesional.
+          content:
+            application/json:
+              example:
+                ok: true
+                status: 200
+                error: null
+                data:
+                  - id: 1
+                    professional_id: 1
+                    day_of_week: Lunes
+                    start_time: 08:00:00
+                    end_time: 09:00:00
+                    appointment_duration: 1
+        '400':
+          description: El cuerpo de la petición no es válido.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 400
+                error: 
+                  - field: professionalId
+                    message: El profesionalId es obligatorio.
+                data: {}
+        '401':
+          description: Error de autenticación.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 401
+                error: Acceso no autorizado, falta el token de autenticación.
+                data: {}
+        '404':
+          description: El profesional no existe.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 404
+                error: El profesional no existe.
+                data: {}
+        '500':
+          description: Error interno del servidor.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 500
+                error: Ocurrió un error inesperado. 
+                data: {}
+    post:
+      tags:
+        - Horarios del Profesional
+      summary: Añadir un horario del profesional.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: professionalId
+          required: true
+          schema:
+            type: integer
+            format: int32
+          description: El id del profesional.
+          example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                dayOfWeek:
+                  type: string
+                  description: El día del horario.
+                  example: Lunes
+                startTime:
+                  type: string
+                  format: time
+                  description: La hora de inicio del horario.
+                  example: 08:00:00
+                endTime:
+                  type: string
+                  format: time
+                  description: La hora de finalización del horario.
+                  example: 09:00:00
+                appointmentDuration:
+                  type: integer
+                  format: int32
+                  description: La duración del turno.
+                  example: 1
+      responses:
+        '201':
+          description: Se ha añadido correctamente el horario del profesional.
+          content:
+            application/json:
+              example:
+                ok: true
+                status: 201
+                error: null
+                data:
+                  id: 1
+                  professional_id: 1
+                  day_of_week: Lunes
+                  start_time: 08:00:00
+                  end_time: 09:00:00
+                  appointment_duration: 1
+        '400':
+          description: El cuerpo de la petición no es válido.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 400
+                error: 
+                  - field: professionalId
+                    message: El profesionalId es obligatorio.
+                  - field: dayOfWeek
+                    message: El dayOfWeek es obligatorio.
+                  - field: startTime
+                    message: La hora de inicio es obligatoria.
+                  - field: endTime
+                    message: La hora de finalización es obligatoria.
+                  - field: appointmentDuration
+                    message: La duración es obligatoria.
+                data: {}
+        '401':
+          description: Error de autenticación.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 401
+                error: Acceso no autorizado, falta el token de autenticación.
+                data: {}
+        '404':
+          description: El profesional no existe.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 404
+                error: El profesional no existe.
+                data: {}
+        '409':
+          description: El profesional ya tiene un horario en ese rango horario.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 409
+                error: El profesional ya tiene un horario en ese rango horario.
+                data: {}
+        '500':
+          description: Error interno del servidor.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 500
+                error: Ocurrió un error inesperado. 
+                data: {}
+    delete:
+      tags:
+        - Horarios del Profesional
+      summary: Eliminar un horario del profesional.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: professionalScheduleId
+          required: true
+          schema:
+            type: integer
+            format: int32
+          description: El id del horario del profesional.
+          example: 1
+      responses:
+        '200':
+          description: Se ha eliminado correctamente el horario del profesional.
+          content:
+            application/json:
+              example:
+                ok: true
+                status: 200
+                error: null
+                data: El horario del profesional ha sido eliminado correctamente.
+        '400':
+          description: El cuerpo de la petición no es válido.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 400
+                error: 
+                  - field: professionalScheduleId
+                    message: El profesionalScheduleId es obligatorio.
+                data: {}
+        '401':
+          description: Error de autenticación.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 401
+                error: Acceso no autorizado, falta el token de autenticación.
+                data: {}
+        '404':
+          description: El horario del profesional no existe.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 404
+                error: El horario profesional no existe.
+                data: {}
+        '500':
+          description: Error interno del servidor.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 500
+                error: Ocurrió un error inesperado.
+  /schedules/{professionalId}/block:
+    get:
+      tags:
+        - Horarios del Profesional
+      summary: Obtener todos los bloqueos de horario del profesional.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: professionalId
+          required: true
+          schema:
+            type: integer
+            format: int32
+          description: El id del profesional.
+          example: 1
+      responses:
+        '200':
+          description: Se han obtenido todos los bloqueos de horario del profesional.
+          content:
+            application/json:
+              example:
+                ok: true
+                status: 200
+                error: null
+                data:
+                  - id: 1
+                    professional_id: 1
+                    date: 2022-03-21
+                    start_time: 08:00:00
+                    end_time: 09:00:00
+                    reason: Vacaciones
+        '400':
+          description: El cuerpo de la petición no es válido.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 400
+                error: 
+                  - field: professionalId
+                    message: El profesionalId es obligatorio.
+                data: {}
+        '401':
+          description: Error de autenticación.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 401
+                error: Acceso no autorizado, falta el token de autenticación.
+                data: {}
+        '404':
+          description: El profesional no existe.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 404
+                error: El profesional no existe.
+                data: {}
+        '500':
+          description: Error interno del servidor.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 500
+                error: Ocurrió un error inesperado. 
+                data: {}
+    post:
+      tags:
+        - Horarios del Profesional
+      summary: Crear un bloqueo de horario.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: professionalId
+          required: true
+          schema:
+            type: integer
+            format: int32
+          description: El id del profesional.
+          example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                date:
+                  type: string
+                  format: date
+                  description: La fecha del bloqueo.
+                  example: 2022-03-21
+                startTime:
+                  type: string
+                  format: time
+                  description: La hora de inicio del bloqueo.
+                  example: 08:00:00
+                endTime:
+                  type: string
+                  format: time
+                  description: La hora de finalización del bloqueo.
+                  example: 09:00:00
+                reason:
+                  type: string
+                  description: La razón del bloqueo.
+                  example: Vacaciones
+      responses:
+        '201':
+          description: Se ha creado correctamente el bloqueo de horario.
+          content:
+            application/json:
+              example:
+                ok: true
+                status: 201
+                error: null
+                data:
+                  id: 1
+                  professional_id: 1
+                  date: 2022-03-21
+                  start_time: 08:00:00
+                  end_time: 09:00:00
+                  reason: Vacaciones
+        '400':
+          description: El cuerpo de la petición no es válido.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 400
+                error: 
+                  - field: professionalId
+                    message: El profesionalId es obligatorio.
+                  - field: date
+                    message: La fecha es obligatoria.
+                  - field: startTime
+                    message: La hora de inicio es obligatoria.
+                  - field: endTime
+                    message: La hora de finalización es obligatoria.
+                  - field: reason
+                    message: La razón es obligatoria.
+                data: {}
+        '401':
+          description: Error de autenticación.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 401
+                error: Acceso no autorizado, falta el token de autenticación.
+                data: {}
+        '404':
+          description: El profesional no existe.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 404
+                error: El profesional no existe.
+                data: {}
+        '409':
+          description: El profesional ya está asociado a la especialidad.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 409
+                error: El profesional ya está asociado a la especialidad.
+                data: {}
+        '500':
+          description: Error interno del servidor.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 500
+                error: Ocurrió un error inesperado. 
+                data: {}
+    delete:
+      tags:
+        - Horarios del Profesional
+      summary: Eliminar un bloqueo de horario del profesional.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: professionalScheduleBlockId
+          required: true
+          schema:
+            type: integer
+            format: int32
+          description: El id del bloqueo de horario del profesional.
+          example: 1
+      responses:
+        '200':
+          description: Se ha eliminado correctamente el bloqueo de horario del profesional.
+          content:
+            application/json:
+              example:
+                ok: true
+                status: 200
+                error: null
+                data: El bloqueo de horario del profesional ha sido eliminado correctamente.
+        '400':
+          description: El cuerpo de la petición no es válido.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 400
+                error: 
+                  - field: professionalScheduleBlockId
+                    message: El profesionalScheduleBlockId es obligatorio.
+                data: {}
+        '401':
+          description: Error de autenticación.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 401
+                error: Acceso no autorizado, falta el token de autenticación.
+                data: {}
+        '404':
+          description: El bloqueo del profesional no existe.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 404
+                error: El bloqueo del profesional no existe.
+                data: {}
+        '500':
+          description: Error interno del servidor.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 500
+                error: Ocurrió un error inesperado.
+                data: {}

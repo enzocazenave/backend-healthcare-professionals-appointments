@@ -110,7 +110,7 @@ const appointmentServices = {
         end_time: endTime
       });
 
-      return appointment;
+      return appointment.get({ plain: true });
     } catch (error) {
       throw error;
     }
