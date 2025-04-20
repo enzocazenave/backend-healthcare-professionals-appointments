@@ -27,15 +27,6 @@ const User = sequelize.define('user', {
     type: DataTypes.STRING(20),
     allowNull: true,
   },
-  prepaid_id: {
-    type: DataTypes.INTEGER,
-    allowNull: true,
-    references: {
-      model: Prepaid,
-      key: 'id'
-    },
-    onDelete: 'SET NULL'
-  },
   role_id: {
     type: DataTypes.INTEGER,
     allowNull: false,
@@ -49,7 +40,6 @@ const User = sequelize.define('user', {
   paranoid: true
 });
 
-User.belongsTo(Prepaid, { foreignKey: 'prepaid_id' });
 User.belongsTo(Role, { foreignKey: 'role_id' });
 
 export default User;

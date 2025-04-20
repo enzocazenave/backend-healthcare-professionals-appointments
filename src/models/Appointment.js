@@ -2,6 +2,7 @@ import { DataTypes } from 'sequelize';
 import sequelize from '../config/database.js';
 import User from './User.js';
 import Specialty from './Specialty.js';
+import AppointmentState from './AppointmentState.js';
 
 const Appointment = sequelize.define('appointment', {
   id: {
@@ -45,10 +46,13 @@ const Appointment = sequelize.define('appointment', {
     type: DataTypes.TIME,
     allowNull: false
   },
-  status: {
-    type: DataTypes.STRING(20),
+  appointment_state_id: {
+    type: DataTypes.INTEGER,
     allowNull: false,
-    defaultValue: 'Scheduled'
+    references: {
+      model: 'appointment_states',
+      key: 'id'
+    }
   },
   notes: {
     type: DataTypes.STRING(255),
@@ -59,6 +63,7 @@ const Appointment = sequelize.define('appointment', {
   tableName: 'appointments'
 });
 
+Appointment.belongsTo(AppointmentState, { foreignKey: 'appointment_state_id' });
 Appointment.belongsTo(User, { foreignKey: 'professional_id', as: 'professional' });
 Appointment.belongsTo(User, { foreignKey: 'patient_id', as: 'patient' });
 Appointment.belongsTo(Specialty, { foreignKey: 'specialty_id' });

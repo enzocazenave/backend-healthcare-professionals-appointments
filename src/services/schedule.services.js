@@ -1,9 +1,10 @@
-import ProfessionalSchedule from "../models/ProfessionalSchedule.js";
+import { Sequelize } from 'sequelize';
+import db from '../config/index.js';
 
 const scheduleServices = {
   createProfessionalSchedule: async (schedule) => {
     try {
-      const professional = await User.findOne({ where: { id: schedule.professionalId, role_id: 2 } });
+      const professional = await db.User.findOne({ where: { id: schedule.professionalId, role_id: 2 } });
 
       if (!professional) throw {
         layer: 'scheduleServices',
@@ -11,7 +12,7 @@ const scheduleServices = {
         statusCode: 404
       }
 
-      const professionalHasScheduleInThisHourRange = await ProfessionalSchedule.findOne({
+      const professionalHasScheduleInThisHourRange = await db.ProfessionalSchedule.findOne({
         where: {
           professional_id: professional.id,
           day_of_week: schedule.dayOfWeek,
@@ -28,7 +29,7 @@ const scheduleServices = {
         statusCode: 409
       }
 
-      const newProfessionalSchedule = await ProfessionalSchedule.create({
+      const newProfessionalSchedule = await db.ProfessionalSchedule.create({
         professional_id: professional.id,
         day_of_week: schedule.dayOfWeek,
         start_time: schedule.startTime,
@@ -38,13 +39,14 @@ const scheduleServices = {
 
       return newProfessionalSchedule.get({ plain: true });
     } catch (error) {
+      console.log(error)
       throw error;
     }
   },
 
   getProfessionalSchedules: async (professionalId) => {
     try {
-      const professional = await User.findOne({ where: { id: professionalId, role_id: 2 } });
+      const professional = await db.User.findOne({ where: { id: professionalId, role_id: 2 } });
 
       if (!professional) throw {
         layer: 'scheduleServices',
@@ -52,7 +54,7 @@ const scheduleServices = {
         statusCode: 404
       }
 
-      const professionalSchedules = await ProfessionalSchedule.findAll({
+      const professionalSchedules = await db.ProfessionalSchedule.findAll({
         where: {
           professional_id: professional.id
         }
@@ -66,7 +68,7 @@ const scheduleServices = {
 
   deleteProfessionalSchedule: async (professionalScheduleId) => {
     try {
-      const professionalSchedule = await ProfessionalSchedule.findByPk(professionalScheduleId);
+      const professionalSchedule = await db.ProfessionalSchedule.findByPk(professionalScheduleId);
 
       if (!professionalSchedule) throw {
         layer: 'scheduleServices',
@@ -84,7 +86,7 @@ const scheduleServices = {
 
   createProfessionalScheduleBlock: async (scheduleBlock) => {
     try {
-      const professional = await User.findOne({ where: { id: scheduleBlock.professionalId, role_id: 2 } });
+      const professional = await db.User.findOne({ where: { id: scheduleBlock.professionalId, role_id: 2 } });
 
       if (!professional) throw {
         layer: 'scheduleServices',
@@ -92,9 +94,9 @@ const scheduleServices = {
         statusCode: 404
       }
 
-      const professionalScheduleBlock = await ProfessionalSchedule.create({
+      const professionalScheduleBlock = await db.ProfessionalScheduleBlock.create({
         professional_id: professional.id,
-        day_of_week: scheduleBlock.dayOfWeek,
+        date: scheduleBlock.date,
         start_time: scheduleBlock.startTime,
         end_time: scheduleBlock.endTime,
         reason: scheduleBlock.reason
@@ -102,13 +104,14 @@ const scheduleServices = {
 
       return professionalScheduleBlock.get({ plain: true });
     } catch (error) {
+      console.log(error)
       throw error;
     }
   },
 
   getProfessionalScheduleBlocks: async (professionalId) => {
     try {
-      const professional = await User.findOne({ where: { id: professionalId, role_id: 2 } });
+      const professional = await db.User.findOne({ where: { id: professionalId, role_id: 2 } });
 
       if (!professional) throw {
         layer: 'scheduleServices',
@@ -116,7 +119,7 @@ const scheduleServices = {
         statusCode: 404
       }
 
-      const professionalScheduleBlocks = await ProfessionalSchedule.findAll({
+      const professionalScheduleBlocks = await db.ProfessionalScheduleBlock.findAll({
         where: {
           professional_id: professional.id
         }
@@ -130,7 +133,7 @@ const scheduleServices = {
 
   deleteProfessionalScheduleBlock: async (professionalScheduleBlockId) => {
     try {
-      const professionalScheduleBlock = await ProfessionalSchedule.findByPk(professionalScheduleBlockId);
+      const professionalScheduleBlock = await db.ProfessionalScheduleBlock.findByPk(professionalScheduleBlockId);
 
       if (!professionalScheduleBlock) throw {
         layer: 'scheduleServices',

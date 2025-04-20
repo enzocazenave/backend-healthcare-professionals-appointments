@@ -15,30 +15,4 @@ const Role = sequelize.define('role', {
   timestamps: false
 });
 
-Role.sync()
-  .then(() => {
-    return Role.findOrCreate({
-      where: {
-        name: 'PATIENT'
-      },
-    })
-  })
-  .then(() => {
-    return Role.findOrCreate({
-      where: {
-        name: 'PROFESSIONAL'
-      },
-    })
-  })
-  .then(() => {
-    return Role.findOrCreate({
-      where: {
-        name: 'ADMIN'
-      },
-    })
-  })
-  .catch((err) => {
-    console.error(err);
-  });
-
 export default Role;

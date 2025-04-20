@@ -23,6 +23,16 @@ const userControllers = {
     }
   },
 
+  deletePrepaid: async (req = request, res = response) => {
+    try {
+      const user = await userServices.deletePrepaid(req.user.userId, req.body);
+      
+      sendSuccessResponse(res, 200, user);
+    } catch(error) {
+      sendErrorResponse(res, error?.statusCode, error);
+    }
+  },
+
   updateUserById: async (req = request, res = response) => {
     try {
       const user = await userServices.updateUserById(req.user.userId, req.body);

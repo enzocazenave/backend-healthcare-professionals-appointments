@@ -1,11 +1,9 @@
-import ProfessionalSpecialty from "../models/ProfessionalSpecialty.js";
-import Specialty from "../models/Specialty.js";
-import User from "../models/User.js";
+import db from '../config/index.js';
 
 const specialtyServices = {
   getSpecialties: async () => {
     try {
-      const specialties = await Specialty.findAll();
+      const specialties = await db.Specialty.findAll();
       return specialties;
     } catch (error) {
       throw error
@@ -14,7 +12,7 @@ const specialtyServices = {
 
   getProfessionalsBySpecialty: async (specialtyId) => {
     try {
-      const specialty = await Specialty.findByPk(specialtyId);
+      const specialty = await db.Specialty.findByPk(specialtyId);
 
       if (!specialty) {
         throw {
@@ -24,7 +22,7 @@ const specialtyServices = {
         }
       }
 
-      const professionalSpecialty = await ProfessionalSpecialty.findAll({
+      const professionalSpecialty = await db.ProfessionalSpecialty.findAll({
         where: {
           specialty_id: specialtyId
         }
@@ -38,9 +36,9 @@ const specialtyServices = {
         }
       }
 
-      const professionals = await User.findAll({
+      const professionals = await db.User.findAll({
         where: { id: professionalSpecialty.map(item => item.professional_id) },
-        attributes: { exclude: ['role_id', 'updatedAt', 'deletedAt', 'prepaid_id', 'password'] }
+        attributes: { exclude: ['role_id', 'updatedAt', 'deletedAt', 'password'] }
       });
 
       return professionals;
@@ -51,7 +49,7 @@ const specialtyServices = {
 
   createSpecialty: async ({ name }) => {
     try {
-      const isSpecialtyAlreadyExists = await Specialty.findOne({ where: { name } });
+      const isSpecialtyAlreadyExists = await db.Specialty.findOne({ where: { name } });
 
       if (isSpecialtyAlreadyExists) {
         throw {
@@ -61,7 +59,7 @@ const specialtyServices = {
         }
       }
 
-      const specialty = await Specialty.create({ name });
+      const specialty = await db.Specialty.create({ name });
       return specialty.get({ plain: true });
     } catch (error) {
       throw error
@@ -70,21 +68,21 @@ const specialtyServices = {
 
   addProfessionalToSpecialty: async ({ professionalId, specialtyId }) => {
     try {
-      const isProfessionalExists = await User.findOne({ where: { id: professionalId, role_id: 2 } });
+      const isProfessionalExists = await db.User.findOne({ where: { id: professionalId, role_id: 2 } });
       if (!isProfessionalExists) throw {
         layer: 'specialtyServices',
         key: 'PROFESSIONAL_NOT_FOUND',
         statusCode: 404
       }
 
-      const isSpecialtyExists = await Specialty.findOne({ where: { id: specialtyId } });
+      const isSpecialtyExists = await db.Specialty.findOne({ where: { id: specialtyId } });
       if (!isSpecialtyExists) throw {
         layer: 'specialtyServices',
         key: 'SPECIALTY_NOT_FOUND',
         statusCode: 404
       }
 
-      const professionalHasSpecialty = await ProfessionalSpecialty.findOne({ where: { professional_id: professionalId, specialty_id: specialtyId } });
+      const professionalHasSpecialty = await db.ProfessionalSpecialty.findOne({ where: { professional_id: professionalId, specialty_id: specialtyId } });
       if (professionalHasSpecialty) {
         throw {
           layer: 'specialtyServices',
@@ -93,7 +91,7 @@ const specialtyServices = {
         }
       }
 
-      await ProfessionalSpecialty.create({ professional_id: professionalId, specialty_id: specialtyId });
+      await db.ProfessionalSpecialty.create({ professional_id: professionalId, specialty_id: specialtyId });
 
       return "El profesional ha sido añadido correctamente a la especialidad.";
     } catch (error) {
@@ -103,7 +101,7 @@ const specialtyServices = {
 
   deleteProfessionalFromSpecialty: async ({ professionalId, specialtyId }) => {
     try {
-      const deletedProfessionalSpeciality = await ProfessionalSpecialty.destroy({
+      const deletedProfessionalSpeciality = await db.ProfessionalSpecialty.destroy({
         where: {
           professional_id: professionalId,
           specialty_id: specialtyId
@@ -127,7 +125,7 @@ const specialtyServices = {
 
   deleteSpecialtyById: async (specialtyId) => {
     try {
-      const deletedSpecialty = await Specialty.destroy({
+      const deletedSpecialty = await db.Specialty.destroy({
         where: {
           id: specialtyId
         }
