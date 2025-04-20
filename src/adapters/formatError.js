@@ -76,6 +76,10 @@ const errors = {
     PROFESSIONAL_HAS_SCHEDULE_IN_THIS_HOUR_RANGE: 'El profesional ya tiene un horario en este rango de horas.',
     PROFESSIONAL_SCHEDULE_NOT_FOUND: 'El horario del profesional no existe.',
     PROFESSIONAL_SCHEDULE_BLOCK_NOT_FOUND: 'El bloqueo del horario del profesional no existe.',
+  },
+  prepaidServices: {
+    PREPAID_ALREADY_EXISTS: 'Ya existe una prepaga asociada al usuario.',
+    PREPAID_NOT_FOUND: 'La prepaga no existe.'
   }
 }
 

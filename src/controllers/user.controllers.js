@@ -13,6 +13,16 @@ const userControllers = {
     }
   },
 
+  getPrepaids: async (req = request, res = response) => {
+    try {
+      const prepaids = await userServices.getPrepaids(req.user.userId);
+
+      sendSuccessResponse(res, 200, prepaids);
+    } catch(error) {
+      sendErrorResponse(res, error?.statusCode, error);
+    }
+  },
+
   addPrepaid: async (req = request, res = response) => {
     try {
       const user = await userServices.addPrepaid(req.user.userId, req.body);

@@ -22,6 +22,28 @@ const userServices = {
     }
   },
 
+  getPrepaids: async (userId) => {
+    try {
+      const user = await db.User.findByPk(userId);
+
+      if (!user) throw {
+        layer: 'userServices',
+        key: 'USER_NOT_FOUND',
+        statusCode: 404
+      }
+
+      const prepaids = await db.PrepaidAffiliation.findAll({
+        where: { user_id: userId },
+        include: [{ model: db.Prepaid }],
+        attributes: { exclude: ['user_id', 'prepaid_id'] }
+      });
+
+      return prepaids;
+    } catch (error) {
+      throw error;
+    }
+  },
+
   addPrepaid: async (userId, { prepaidId, plan, number }) => {
     try {
       const user = await db.User.findByPk(userId);

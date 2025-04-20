@@ -36,6 +36,8 @@ const PrepaidAffiliation = sequelize.define('prepaid_affiliation', {
     allowNull: false,
     unique: true
   }
+}, {
+  timestamps: false,
 })
 
 PrepaidAffiliation.belongsTo(User, { foreignKey: 'user_id', onDelete: 'CASCADE' });

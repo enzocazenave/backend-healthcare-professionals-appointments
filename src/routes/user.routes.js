@@ -8,6 +8,8 @@ const router = Router();
 
 router.get('/', [tokenValidator], userControllers.getUserById);
 
+router.get('/prepaids', [tokenValidator], userControllers.getPrepaids);
+
 router.post('/prepaid', [
   tokenValidator,
   body('prepaidId', 'PREPAID_ID_IS_REQUIRED').isInt({ min: 1 }),
