@@ -1833,15 +1833,6 @@ paths:
                 status: 404
                 error: El profesional no existe.
                 data: {}
-        '409':
-          description: El profesional ya está asociado a la especialidad.
-          content:
-            application/json:
-              example:
-                ok: false
-                status: 409
-                error: El profesional ya está asociado a la especialidad.
-                data: {}
         '500':
           description: Error interno del servidor.
           content:
