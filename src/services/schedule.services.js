@@ -1,5 +1,6 @@
 import { Sequelize } from 'sequelize';
 import db from '../config/index.js';
+import { parse } from 'date-fns';
 
 const scheduleServices = {
   createProfessionalSchedule: async (schedule) => {
@@ -96,7 +97,7 @@ const scheduleServices = {
 
       const professionalScheduleBlock = await db.ProfessionalScheduleBlock.create({
         professional_id: professional.id,
-        date: scheduleBlock.date,
+        date: parse(scheduleBlock.date, 'yyyy-MM-dd', new Date()),
         start_time: scheduleBlock.startTime,
         end_time: scheduleBlock.endTime,
         reason: scheduleBlock.reason

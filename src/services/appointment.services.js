@@ -1,6 +1,7 @@
 import { Sequelize } from 'sequelize';
 import getWeekday from '../utils/getWeekday.js';
-import { differenceInMinutes, eachDayOfInterval, format, parse } from 'date-fns';
+import { formatInTimeZone } from 'date-fns-tz';
+import { addMinutes, differenceInMinutes, eachDayOfInterval, format, isAfter, isBefore, parse } from 'date-fns';
 import db from '../config/index.js';
 
 const appointmentServices = {
@@ -75,7 +76,7 @@ const appointmentServices = {
       const isTimeSlotInScheduleBlocks = await db.ProfessionalScheduleBlock.findOne({
         where: {
           professional_id: professionalId,
-          date: new Date(date),
+          date: parsedDate,
           [Sequelize.Op.and]: [
             { start_time: { [Sequelize.Op.lt]: endTime } },
             { end_time: { [Sequelize.Op.gt]: startTime } }
@@ -92,7 +93,7 @@ const appointmentServices = {
       const isTimeSlotReserved = await db.Appointment.findOne({
         where: {
           professional_id: professionalId,
-          date: new Date(date),
+          date: parsedDate,
           appointment_state_id: { [Sequelize.Op.in]: [1, 3] },
           [Sequelize.Op.and]: [
             { start_time: { [Sequelize.Op.lt]: endTime } },
@@ -111,7 +112,7 @@ const appointmentServices = {
         professional_id: professionalId,
         patient_id: patientId,
         specialty_id: specialtyId,
-        date: new Date(date),
+        date: parsedDate,
         start_time: startTime,
         end_time: endTime,
         appointment_state_id: 1
@@ -119,7 +120,6 @@ const appointmentServices = {
 
       return appointment.get({ plain: true });
     } catch (error) {
-      console.log(error)
       throw error;
     }
   },
@@ -207,8 +207,8 @@ const appointmentServices = {
         statusCode: 404
       }
 
-      startDate = new Date(startDate);
-      endDate = new Date(endDate);
+      startDate = parse(startDate, 'yyyy-MM-dd', new Date());
+      endDate = parse(endDate, 'yyyy-MM-dd', new Date());
       
       const appointments = await db.Appointment.findAll({
         where: {
@@ -272,16 +272,102 @@ const appointmentServices = {
 
       const startDateRange = parse(startDate, 'yyyy-MM-dd', new Date());
       const endDateRange = parse(endDate, 'yyyy-MM-dd', new Date());
-      
+
       const dateRange = eachDayOfInterval({
         start: startDateRange,
         end: endDateRange
-      }).map(date => format(date, 'yyyy-MM-dd'));
+      });
 
-      //TODO: Implementar calculo de disponibiilidad de un profesional
+      const schedule = await db.ProfessionalSchedule.findAll({
+        where: {  professional_id: professionalId },
+      });
 
-      return [];
+      const blocks = await db.ProfessionalScheduleBlock.findAll({
+        where: { 
+          professional_id: professionalId,
+          date: { [Sequelize.Op.gte]: startDateRange, [Sequelize.Op.lte]: endDateRange },
+        },
+      });
+
+      const appointments = await db.Appointment.findAll({
+        where: { 
+          professional_id: professionalId,
+          date: { [Sequelize.Op.gte]: startDateRange, [Sequelize.Op.lte]: endDateRange },
+          appointment_state_id: { [Sequelize.Op.in]: [1, 3] }
+        },
+      })
+
+      const availability = [];
+
+      for (const date of dateRange) {
+        const formattedDate = format(date, 'yyyy-MM-dd');
+        const dayOfWeek = getWeekday(date);
+
+        const scheduleForDay = schedule.filter(s => s.day_of_week === dayOfWeek);
+
+        const blocksForDay = blocks.filter(b => {
+          return formattedDate === format(b.date, 'yyyy-MM-dd');
+        });
+
+        const appointmentsForDay = appointments.filter(a => {
+          return formattedDate === format(a.date, 'yyyy-MM-dd');
+        });
+
+        const timeSlots = [];
+
+        for (const s of scheduleForDay) {
+          const startTime = formatInTimeZone(s.start_time, 'UTC', 'HH:mm');
+          const endTime = formatInTimeZone(s.end_time, 'UTC', 'HH:mm');
+          
+          let start = new Date(`${formattedDate}T${startTime}`);
+          const end = new Date(`${formattedDate}T${endTime}`);
+
+          const duration = s.appointment_duration;
+
+          while (isBefore(start, end)) {
+            const slotEnd = addMinutes(start, duration);
+            if (isAfter(slotEnd, end)) break;
+
+            const isBlocked = blocksForDay.some(b => {
+              const startTime = formatInTimeZone(b.start_time, 'UTC', 'HH:mm');
+              const endTime = formatInTimeZone(b.end_time, 'UTC', 'HH:mm');
+              
+              const blockStart = new Date(`${formattedDate}T${startTime}`);
+              const blockEnd = new Date(`${formattedDate}T${endTime}`);
+              
+              return (start < blockEnd && slotEnd > blockStart);
+            });
+          
+            const isReserved = appointmentsForDay.some(a => {
+              const startTime = formatInTimeZone(a.start_time, 'UTC', 'HH:mm')
+              const endTime = formatInTimeZone(a.end_time, 'UTC', 'HH:mm');
+
+              const apptStart = new Date(`${formattedDate}T${startTime}`);
+              const apptEnd = new Date(`${formattedDate}T${endTime}`);
+
+              return (start < apptEnd && slotEnd > apptStart);
+            });
+          
+            if (!isBlocked && !isReserved) {
+              timeSlots.push({
+                start_time: format(start, 'HH:mm'),
+                end_time: format(slotEnd, 'HH:mm')
+              });
+            }
+          
+            start = addMinutes(start, duration);
+          }
+        }
+
+        availability.push({
+          date: formattedDate,
+          slots: timeSlots
+        });
+      }
+      
+      return availability;
     } catch (error) {
+      console.log(error)
       throw error;
     }
   }
