@@ -134,7 +134,7 @@ const appointmentServices = {
         statusCode: 404
       }
 
-      if (appointment.status === 'Completed') throw {
+      if (appointment.appointment_state_id === 3) throw {
         layer: 'appointmentServices',
         key: 'APPOINTMENT_ALREADY_COMPLETED',
         statusCode: 409
