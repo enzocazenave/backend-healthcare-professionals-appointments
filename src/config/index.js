@@ -2,6 +2,7 @@ import sequelize from './database.js';
 
 import AppointmentState from '../models/AppointmentState.js';
 import Appointment from '../models/Appointment.js';
+import MedicalRecord from '../models/MedicalRecord.js';
 import Notification from '../models/Notification.js';
 import PasswordResetCode from '../models/PasswordResetCode.js';
 import Prepaid from '../models/Prepaid.js';
@@ -48,6 +49,7 @@ const db = {
   sequelize,
   AppointmentState,
   Appointment,
+  MedicalRecord,
   Notification,
   PasswordResetCode,
   Prepaid,
