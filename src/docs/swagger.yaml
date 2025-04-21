@@ -1213,6 +1213,66 @@ paths:
                 status: 500
                 error: Ocurrió un error inesperado. 
                 data: {}
+  /appointments/complete/{appointmentId}:
+    patch:
+      tags:
+        - Turnos
+      summary: Completar un turno.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: appointmentId
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Turno completado con éxito.
+          content:
+            application/json:
+              example:
+                ok: true
+                status: 200
+                error: null
+                data: {}
+        '400':
+          description: Error de validación del servidor.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 400
+                error: El campo 'appointmentId' es obligatorio.
+                data: {}
+        '404':
+          description: Turno no encontrado.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 404
+                error: El turno no existe.
+                data: {}
+        '409':
+          description: Turno ya completado.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 409
+                error: El turno ya fue completado.
+                data: {}
+        '500':
+          description: Error interno del servidor.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 500
+                error: Ocurrió un error inesperado.
+                data: {}
   /appointments/{appointmentId}:
     delete:
       tags:
