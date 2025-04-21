@@ -2273,3 +2273,225 @@ paths:
                 status: 500
                 error: Ocurrió un error inesperado.
                 data: {}
+  /medical-records/patients/{patientId}:
+    get:
+      tags:
+        - Historia Clínica
+      summary: Obtener todos los registros médicos de un paciente.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: patientId
+          required: true
+          schema:
+            type: integer
+            format: int32
+          description: El id del paciente.
+          example: 1
+      responses:
+        '200':
+          description: Se han obtenido todos los registros médicos de un paciente.
+          content:
+            application/json:
+              example:
+                ok: true
+                status: 200
+                error: null
+                data:
+                  - id: 1
+                    patient_id: 1
+                    record: Paciente con fiebre leve
+                    file_url: https://example.com/file.pdf
+                  - id: 2
+                    patient_id: 1
+                    record: Paciente con fiebre moderada
+                    file_url: https://example.com/file.pdf
+        '400':
+          description: El cuerpo de la petición no es válido.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 400
+                error: 
+                  - field: patientId
+                    message: El pacienteId es obligatorio.
+                data: {}
+        '401':
+          description: Error de autenticación.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 401
+                error: Acceso no autorizado, falta el token de autenticación.
+                data: {}
+        '404':
+          description: El paciente no existe.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 404
+                error: El paciente no existe.
+                data: {}
+        '500':
+          description: Error interno del servidor.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 500
+                error: Ocurrió un error inesperado.
+                data: {}
+    post:
+      tags:
+        - Historia Clínica
+      summary: Crear un registro médico.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: patientId
+          required: true
+          schema:
+            type: integer
+            format: int32
+          description: El id del paciente.
+          example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                record:
+                  type: string
+                  description: El registro médico.
+                  example: Paciente con fiebre leve
+                fileUrl:
+                  type: string
+                  description: La url del archivo.
+                  example: https://example.com/file.pdf
+      responses:
+        '201':
+          description: Se ha creado correctamente el registro médico.
+          content:
+            application/json:
+              example:
+                ok: true
+                status: 201
+                error: null
+                data:
+                  id: 1
+                  patient_id: 1
+                  record: Paciente con fiebre leve
+                  file_url: https://example.com/file.pdf
+        '400':
+          description: El cuerpo de la petición no es válido.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 400
+                error: 
+                  - field: patientId
+                    message: El pacienteId es obligatorio.
+                  - field: record
+                    message: El registro médico es obligatorio.
+                  - field: fileUrl
+                    message: La url del archivo es obligatoria.
+                data: {}
+        '401':
+          description: Error de autenticación.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 401
+                error: Acceso no autorizado, falta el token de autenticación.
+                data: {}
+        '404':
+          description: El paciente no existe.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 404
+                error: El paciente no existe.
+                data: {}
+        '500':
+          description: Error interno del servidor.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 500
+                error: Ocurrió un error inesperado.
+                data: {}
+  /medical-records/{medicalRecordId}:
+    delete:
+      tags:
+        - Historia Clínica
+      summary: Eliminar un registro médico.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: medicalRecordId
+          required: true
+          schema:
+            type: integer
+            format: int32
+          description: El id del registro médico.
+          example: 1
+      responses:
+        '200':
+          description: Se ha eliminado correctamente el registro médico.
+          content:
+            application/json:
+              example:
+                ok: true
+                status: 200
+                error: null
+                data: El registro médico ha sido eliminado correctamente.
+        '400':
+          description: El cuerpo de la petición no es válido.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 400
+                error: 
+                  - field: medicalRecordId
+                    message: El medicalRecordId es obligatorio.
+                data: {}
+        '401':
+          description: Error de autenticación.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 401
+                error: Acceso no autorizado, falta el token de autenticación.
+                data: {}
+        '404':
+          description: El registro médico no existe.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 404
+                error: El registro médico no existe.
+                data: {}
+        '500':
+          description: Error interno del servidor.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 500
+                error: Ocurrió un error inesperado.
+                data: {}

@@ -54,10 +54,6 @@ const Appointment = sequelize.define('appointment', {
       key: 'id'
     }
   },
-  notes: {
-    type: DataTypes.STRING(255),
-    defaultValue: null
-  }
 }, {
   timestamps: false,
   tableName: 'appointments'

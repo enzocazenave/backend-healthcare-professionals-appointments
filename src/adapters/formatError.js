@@ -25,6 +25,9 @@ const errors = {
     REASON_IS_REQUIRED: 'La razón es obligatoria.',
     PROFESSIONAL_SCHEDULE_BLOCK_ID_IS_REQUIRED: 'El id de la programación de bloque del profesional es obligatorio.',
     PREPAID_ID_IS_REQUIRED: 'El id de la prepaga es obligatorio.',
+    RECORD_IS_REQUIRED: 'El registro médico es obligatorio.',
+    FILE_URL_IS_REQUIRED: 'La url del archivo es obligatoria.',
+    MEDICAL_RECORD_ID_IS_REQUIRED: 'El id del registro médico es obligatorio.',
   },
   middlewareTokenValidator: {
     TOKEN_NOT_FOUND: 'Acceso no autorizado, no se encontró el token.',
@@ -82,6 +85,10 @@ const errors = {
   prepaidServices: {
     PREPAID_ALREADY_EXISTS: 'Ya existe una prepaga asociada al usuario.',
     PREPAID_NOT_FOUND: 'La prepaga no existe.'
+  },
+  medicalRecordServices: {
+    PATIENT_NOT_FOUND: 'El paciente no existe.',
+    MEDICAL_RECORD_NOT_FOUND: 'El registro médico no existe.'
   }
 }
 
