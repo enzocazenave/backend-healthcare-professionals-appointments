@@ -17,6 +17,17 @@ const appointmentControllers = {
       sendErrorResponse(res, error?.statusCode, error);
     }
   },
+
+  complete: async (req = request, res = response) => {
+    try {
+      const response = await appointmentServices.complete({
+        appointmentId: req.params.appointmentId
+      });
+      sendSuccessResponse(res, 200, response);
+    } catch(error) {
+      sendErrorResponse(res, error?.statusCode, error);
+    }
+  },
   
   getAppointmentsByProfessional: async (req = request, res = response) => {
     try {

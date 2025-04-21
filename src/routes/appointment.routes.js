@@ -3,6 +3,7 @@ import { body, param, query } from 'express-validator';
 import appointmentControllers from '../controllers/appointment.controllers.js';
 import fieldValidator from '../middlewares/fieldValidator.js';
 import tokenValidator from '../middlewares/tokenValidator.js';
+import roleValidator from '../middlewares/roleValidator.js';
 
 const router = Router();
 
@@ -16,6 +17,13 @@ router.post("/", [
   body('endTime', 'END_TIME_IS_REQUIRED').isTime(),
   fieldValidator
 ], appointmentControllers.create);
+
+router.patch('/complete/:appointmentId', [
+  tokenValidator,
+  roleValidator(2),
+  param('appointmentId', 'APPOINTMENT_ID_IS_REQUIRED').isInt(),
+  fieldValidator
+], appointmentControllers.complete);
 
 router.get('/professionals/:professionalId', [
   tokenValidator,

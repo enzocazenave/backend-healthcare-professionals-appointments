@@ -62,7 +62,8 @@ const errors = {
     PROFESSIONAL_DOES_NOT_WORK_ON_THAT_DAY: 'El profesional no trabaja ese día.',
     USER_DOES_NOT_HAVE_PERMISSION: 'El usuario no tiene permiso para crear turnos.',
     APPOINTMENT_NOT_FOUND: 'El turno no existe.',
-    APPOINTMENT_ALREADY_CANCELLED: 'El turno ya fue cancelado.'
+    APPOINTMENT_ALREADY_CANCELLED: 'El turno ya fue cancelado.',
+    APPOINTMENT_ALREADY_COMPLETED: 'El turno ya fue completado.'
   },
   specialtyServices: {
     SPECIALTY_NOT_FOUND: 'La especialidad no existe.',

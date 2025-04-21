@@ -111,6 +111,30 @@ const appointmentServices = {
       throw error;
     }
   },
+
+  complete: async ({ appointmentId }) => {
+    try {
+      const appointment = await db.Appointment.findByPk(appointmentId);
+
+      if (!appointment) throw {
+        layer: 'appointmentServices',
+        key: 'APPOINTMENT_NOT_FOUND',
+        statusCode: 404
+      }
+
+      if (appointment.status === 'Completed') throw {
+        layer: 'appointmentServices',
+        key: 'APPOINTMENT_ALREADY_COMPLETED',
+        statusCode: 409
+      }
+
+      await appointment.update({ appointment_state_id: 3 });
+
+      return "El turno fue completado con éxito.";
+    } catch (error) {
+      throw error;
+    }
+  },
   
   getAppointmentsByProfessional: async ({ professionalId, startDate, endDate, patientId }) => {
     try {
@@ -157,7 +181,6 @@ const appointmentServices = {
 
       return appointments;
     } catch (error) {
-      console.log(error)
       throw error;
     }
   },
@@ -247,7 +270,6 @@ const appointmentServices = {
 
       return [];
     } catch (error) {
-      console.log(error)
       throw error;
     }
   }
