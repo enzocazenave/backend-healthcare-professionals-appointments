@@ -1,6 +1,6 @@
 import { Sequelize } from 'sequelize';
 import getWeekday from '../utils/getWeekday.js';
-import { eachDayOfInterval, format, parse } from 'date-fns';
+import { differenceInMinutes, eachDayOfInterval, format, parse } from 'date-fns';
 import db from '../config/index.js';
 
 const appointmentServices = {
@@ -46,7 +46,7 @@ const appointmentServices = {
         statusCode: 404
       }
 
-      const isTimeSlotInSchedule = await db.ProfessionalSchedule.findOne({
+      const professionalSchedule = await db.ProfessionalSchedule.findOne({
         where: {
           professional_id: professionalId,
           day_of_week: getWeekday(parsedDate),
@@ -55,9 +55,20 @@ const appointmentServices = {
         }
       });
 
-      if (!isTimeSlotInSchedule) throw {
+      if (!professionalSchedule) throw {
         layer: 'appointmentServices',
         key: 'TIME_SLOT_IS_NOT_IN_PROFESSIONAL_SCHEDULE',
+        statusCode: 409
+      }
+
+      const appointmentDuration = differenceInMinutes(
+        new Date(`1970-01-01T${endTime}:00`),
+        new Date(`1970-01-01T${startTime}:00`) 
+      );
+      
+      if (appointmentDuration !== professionalSchedule.appointment_duration) throw {
+        layer: 'appointmentServices',
+        key: 'APPOINTMENT_DURATION_IS_NOT_VALID',
         statusCode: 409
       }
 
@@ -108,6 +119,7 @@ const appointmentServices = {
 
       return appointment.get({ plain: true });
     } catch (error) {
+      console.log(error)
       throw error;
     }
   },

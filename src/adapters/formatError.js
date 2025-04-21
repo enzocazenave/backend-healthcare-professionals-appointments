@@ -63,7 +63,8 @@ const errors = {
     USER_DOES_NOT_HAVE_PERMISSION: 'El usuario no tiene permiso para crear turnos.',
     APPOINTMENT_NOT_FOUND: 'El turno no existe.',
     APPOINTMENT_ALREADY_CANCELLED: 'El turno ya fue cancelado.',
-    APPOINTMENT_ALREADY_COMPLETED: 'El turno ya fue completado.'
+    APPOINTMENT_ALREADY_COMPLETED: 'El turno ya fue completado.',
+    APPOINTMENT_DURATION_IS_NOT_VALID: 'La duración del turno no es válida.'
   },
   specialtyServices: {
     SPECIALTY_NOT_FOUND: 'La especialidad no existe.',
