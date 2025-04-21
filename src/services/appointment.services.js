@@ -6,6 +6,8 @@ import db from '../config/index.js';
 const appointmentServices = {
   create: async ({ professionalId, patientId, specialtyId, date, startTime, endTime }, user) => {
     try {
+      const parsedDate = parse(date, 'yyyy-MM-dd', new Date());
+
       if (user.userRole === 1) {
         if (user.userId !== patientId) {
           throw {
@@ -47,11 +49,9 @@ const appointmentServices = {
       const isTimeSlotInSchedule = await db.ProfessionalSchedule.findOne({
         where: {
           professional_id: professionalId,
-          day_of_week: getWeekday(new Date(date)),
-          [Sequelize.Op.or]: [
-            { start_time: { [Sequelize.Op.lt]: endTime }, end_time: { [Sequelize.Op.gt]: startTime } },
-            { start_time: { [Sequelize.Op.lt]: startTime }, end_time: { [Sequelize.Op.gt]: endTime } }
-          ]
+          day_of_week: getWeekday(parsedDate),
+          start_time: { [Sequelize.Op.lte]: startTime },
+          end_time: { [Sequelize.Op.gte]: endTime }
         }
       });
 
@@ -64,10 +64,10 @@ const appointmentServices = {
       const isTimeSlotInScheduleBlocks = await db.ProfessionalScheduleBlock.findOne({
         where: {
           professional_id: professionalId,
-          day_of_week: getWeekday(new Date(date)),
-          [Sequelize.Op.or]: [
-            { start_time: { [Sequelize.Op.lt]: endTime }, end_time: { [Sequelize.Op.gt]: startTime } },
-            { start_time: { [Sequelize.Op.lt]: startTime }, end_time: { [Sequelize.Op.gt]: endTime } }
+          date: new Date(date),
+          [Sequelize.Op.and]: [
+            { start_time: { [Sequelize.Op.lt]: endTime } },
+            { end_time: { [Sequelize.Op.gt]: startTime } }
           ]
         }
       });
@@ -81,11 +81,11 @@ const appointmentServices = {
       const isTimeSlotReserved = await db.Appointment.findOne({
         where: {
           professional_id: professionalId,
-          date,
-          status: { [Sequelize.Op.ne]: 'Cancelled' },
-          [Sequelize.Op.or]: [
-            { start_time: { [Sequelize.Op.lt]: endTime }, end_time: { [Sequelize.Op.gt]: startTime } },
-            { start_time: { [Sequelize.Op.lt]: startTime }, end_time: { [Sequelize.Op.gt]: endTime } }
+          date: new Date(date),
+          appointment_state_id: { [Sequelize.Op.in]: [1, 3] },
+          [Sequelize.Op.and]: [
+            { start_time: { [Sequelize.Op.lt]: endTime } },
+            { end_time: { [Sequelize.Op.gt]: startTime } }
           ]
         }
       });
@@ -100,7 +100,7 @@ const appointmentServices = {
         professional_id: professionalId,
         patient_id: patientId,
         specialty_id: specialtyId,
-        date,
+        date: new Date(date),
         start_time: startTime,
         end_time: endTime,
         appointment_state_id: 1
@@ -234,7 +234,7 @@ const appointmentServices = {
         statusCode: 404
       }
 
-      if (appointment.status === 'Cancelled') throw {
+      if (appointment.appointment_state_id === 2) throw {
         layer: 'appointmentServices',
         key: 'APPOINTMENT_ALREADY_CANCELLED',
         statusCode: 409

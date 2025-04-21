@@ -35,7 +35,7 @@ const Appointment = sequelize.define('appointment', {
     }
   },
   date: {
-    type: DataTypes.DATEONLY,
+    type: DataTypes.DATE,
     allowNull: false
   },
   start_time: {
