@@ -1,6 +1,9 @@
-import Server from './config/server.js';
+import swaggerUi from 'swagger-ui-express';
 
-console.log('--------------------------------------------------')
+import express from 'express';
 
-const server = new Server();
-server.start();
+const app = express();
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(YAML.load('./src/docs/swagger.yaml'), { customSiteTitle: 'Healthcare Professionals Appointments API' }));
+
+export default app;
