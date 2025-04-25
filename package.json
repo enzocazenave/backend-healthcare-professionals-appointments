@@ -7,6 +7,10 @@
   "scripts": {
     "dev": "node --env-file ./.env --watch ./src/index.js"
   },
+  "files": [
+    "src/index.js",
+    "src/swagger.yaml"
+  ],
   "keywords": [],
   "author": "",
   "license": "ISC",
