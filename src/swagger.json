@@ -1,0 +1,3978 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Healthcare Professionals Appointments",
+    "version": "1.0.0",
+    "description": "Backend for healthcare professionals appointments"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Servidor local"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "paths": {
+    "/auth/register": {
+      "post": {
+        "summary": "Crear una cuenta",
+        "description": "Endpoint que permite la creación de un nuevo usuario.",
+        "tags": [
+          "Autenticación"
+        ],
+        "requestBody": {
+          "description": "Datos del usuario a crear.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "fullName": "Enzo",
+                "email": "enzo@gmail.com",
+                "password": "difficultpassword",
+                "roleId": 1
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Usuario creado correctamente.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": true,
+                  "status": 201,
+                  "error": null,
+                  "data": {
+                    "userId": 1,
+                    "userRole": 1,
+                    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE2MzI1MzU0NDQ0IiwiaWF0IjoxNjI5MjE0ODQ5L"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "El cuerpo de la petición no es válido.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 400,
+                  "error": [
+                    {
+                      "field": "fullName",
+                      "message": "El nombre completo es obligatorio."
+                    },
+                    {
+                      "field": "email",
+                      "message": "El email es obligatorio."
+                    }
+                  ],
+                  "data": {}
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "El email ya está registrado.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 409,
+                  "error": "El email ya está registrado.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 500,
+                  "error": "Ocurrió un error inesperado.",
+                  "data": {}
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "summary": "Iniciar sesión",
+        "description": "Endpoint que permite el inicio de sesión de un usuario.",
+        "tags": [
+          "Autenticación"
+        ],
+        "requestBody": {
+          "description": "Datos del usuario a iniciar sesión.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "email": "enzo@gmail.com",
+                "password": "difficultpassword"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login exitoso.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": true,
+                  "status": 200,
+                  "error": null,
+                  "data": {
+                    "userId": 1,
+                    "userRole": 1,
+                    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE2MzI1MzU0NDQ0IiwiaWF0IjoxNjI5MjE0ODQ5L"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "El cuerpo de la petición no es válido.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 400,
+                  "error": [
+                    {
+                      "field": "email",
+                      "message": "El email es obligatorio."
+                    }
+                  ],
+                  "data": {}
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Credenciales incorrectas.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 401,
+                  "error": "Credenciales incorrectas.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 500,
+                  "error": "Ocurrió un error inesperado.",
+                  "data": {}
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/refresh-token": {
+      "post": {
+        "summary": "Actualización de token",
+        "description": "Endpoint que permite la actualización del token de acceso mediante el refresh token almacenado en las cookies.",
+        "tags": [
+          "Autenticación"
+        ],
+        "headers": {
+          "Set-Cookie": {
+            "description": "Cookie que contiene el refreshToken para su posterior uso.",
+            "schema": {
+              "type": "string",
+              "example": "refreshToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE2MzI1MzU0NDQ0IiwiaWF0IjoxNjI5MjE0ODQ5L"
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Token actualizado correctamente.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": true,
+                  "status": 200,
+                  "error": null,
+                  "data": {
+                    "userId": 1,
+                    "userRole": 1,
+                    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE2MzI1MzU0NDQ0IiwiaWF0IjoxNjI5MjE0ODQ5L"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error de autenticación.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 401,
+                  "error": "Acceso no autorizado, no se encontró el token.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 500,
+                  "error": "Ocurrió un error inesperado.",
+                  "data": {}
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "summary": "Cerrar sesión",
+        "description": "Endpoint que permite el cierre de sesión del usuario actual.",
+        "tags": [
+          "Autenticación"
+        ],
+        "headers": {
+          "Set-Cookie": {
+            "description": "Cookie que contiene el refreshToken para su posterior uso.",
+            "schema": {
+              "type": "string",
+              "example": "refreshToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE2MzI1MzU0NDQ0IiwiaWF0IjoxNjI5MjE0ODQ5L"
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Sesión cerrada correctamente.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": true,
+                  "status": 200,
+                  "error": "Sesión cerrada correctamente.",
+                  "data": null
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error de autenticación.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 401,
+                  "error": "Acceso no autorizado, no se encontró el token.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 500,
+                  "error": "Ocurrió un error inesperado.",
+                  "data": {}
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/forgot-password": {
+      "post": {
+        "summary": "Recuperar contraseña",
+        "description": "Endpoint que permite el inicio del proceso de recuperación de contraseña enviando un código al email del usuario.",
+        "tags": [
+          "Autenticación"
+        ],
+        "requestBody": {
+          "description": "Datos del usuario a recuperar la contraseña.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "email": "enzo@gmail.com"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Código de recuperación enviado correctamente.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": true,
+                  "status": 200,
+                  "error": null,
+                  "data": {}
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "El cuerpo de la petición no es válido.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 400,
+                  "error": [
+                    {
+                      "field": "email",
+                      "message": "El email es obligatorio."
+                    }
+                  ],
+                  "data": {}
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "El email no existe.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 404,
+                  "error": "El email no existe.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 500,
+                  "error": "Ocurrió un error inesperado.",
+                  "data": {}
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/reset-password": {
+      "post": {
+        "summary": "Restablecer contraseña",
+        "description": "Endpoint que permite el restablecimiento de la contraseña utilizando el código de recuperación.",
+        "tags": [
+          "Autenticación"
+        ],
+        "requestBody": {
+          "description": "Datos del usuario a restablecer la contraseña.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "email": "enzo@gmail.com",
+                "password": "difficultpassword",
+                "code": 123456
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Contraseña actualizada correctamente.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": true,
+                  "status": 200,
+                  "error": null,
+                  "data": "La contraseña ha sido actualizada correctamente."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "El cuerpo de la petición no es válido.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 400,
+                  "error": [
+                    {
+                      "field": "email",
+                      "message": "El email es obligatorio."
+                    },
+                    {
+                      "field": "password",
+                      "message": "La contraseña es obligatoria y debe tener al menos 6 caracteres."
+                    },
+                    {
+                      "field": "code",
+                      "message": "El código de recuperación es obligatorio."
+                    }
+                  ],
+                  "data": {}
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "El código de recuperación no existe.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 404,
+                  "error": "El código de recuperación no existe.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 500,
+                  "error": "Ocurrió un error inesperado.",
+                  "data": {}
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user": {
+      "get": {
+        "summary": "Obtener datos de usuario",
+        "description": "Endpoint que permite obtener los datos de un usuario.",
+        "tags": [
+          "Usuario"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": true,
+                  "status": 200,
+                  "error": null,
+                  "data": {
+                    "id": 1,
+                    "full_name": "Enzo",
+                    "email": "enzo@gmail.com",
+                    "phone_number": 56987654321,
+                    "role": {
+                      "id": 1,
+                      "name": "Usuario"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error de autenticación.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 401,
+                  "error": "Acceso no autorizado, no se encontró el token.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "El usuario no existe.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 404,
+                  "error": "El usuario no existe.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 500,
+                  "error": "Ocurrió un error inesperado.",
+                  "data": {}
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Actualizar datos de usuario",
+        "description": "Endpoint que permite actualizar los datos de un usuario.",
+        "tags": [
+          "Usuario"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Datos del usuario a actualizar.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "phoneNumber": 56987654321
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": true,
+                  "status": 200,
+                  "error": null,
+                  "data": "Datos actualizados correctamente."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "El cuerpo de la petición no es válido.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 400,
+                  "error": [
+                    {
+                      "field": "phoneNumber",
+                      "message": "El número de teléfono debe ser un string."
+                    }
+                  ],
+                  "data": {}
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error de autenticación.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 401,
+                  "error": "Acceso no autorizado, no se encontró el token.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "El usuario no existe.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 404,
+                  "error": "El usuario no existe.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 500,
+                  "error": "Ocurrió un error inesperado.",
+                  "data": {}
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Eliminar usuario",
+        "description": "Endpoint que permite eliminar un usuario.",
+        "tags": [
+          "Usuario"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": true,
+                  "status": 200,
+                  "error": null,
+                  "data": "Usuario eliminado correctamente."
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error de autenticación.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 401,
+                  "error": "Acceso no autorizado, no se encontró el token.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "El usuario no existe.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 404,
+                  "error": "El usuario no existe.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 500,
+                  "error": "Ocurrió un error inesperado.",
+                  "data": {}
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/prepaid": {
+      "post": {
+        "summary": "Añadir prepaga",
+        "description": "Endpoint que permite añadir una prepaga a un usuario.",
+        "tags": [
+          "Usuario"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Datos del usuario a añadir la prepaga.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "prepaidId": 1,
+                "plan": "Basic",
+                "number": 123456
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": true,
+                  "status": 200,
+                  "error": null,
+                  "data": "La prepaga ha sido añadida correctamente."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "El cuerpo de la petición no es válido.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 400,
+                  "error": [
+                    {
+                      "field": "prepaidId",
+                      "message": "El id de la prepaga es obligatorio."
+                    },
+                    {
+                      "field": "plan",
+                      "message": "El plan es obligatorio."
+                    },
+                    {
+                      "field": "number",
+                      "message": "El código es obligatorio."
+                    }
+                  ],
+                  "data": {}
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error de autenticación.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 401,
+                  "error": "Acceso no autorizado, falta el token de autenticación.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "El usuario no existe.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 404,
+                  "error": "El usuario no existe.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "El usuario ya está afiliado a la prepaga.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 409,
+                  "error": "El usuario ya está afiliado a la prepaga.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 500,
+                  "error": "Ocurrió un error inesperado.",
+                  "data": {}
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Eliminar afiliación a la prepaga.",
+        "description": "Endpoint que permite eliminar la afiliación a la prepaga del usuario.",
+        "tags": [
+          "Usuario"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": "El id del usuario.",
+            "example": 1
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "prepaidId": {
+                    "type": "integer",
+                    "format": "int32",
+                    "description": "El id de la prepaga.",
+                    "example": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": true,
+                  "status": 200,
+                  "error": null,
+                  "data": "La afiliación a la prepaga ha sido eliminada correctamente."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "El cuerpo de la petición no es válido.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 400,
+                  "error": [
+                    {
+                      "field": "prepaidId",
+                      "message": "El id de la prepaga es obligatorio."
+                    }
+                  ],
+                  "data": {}
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error de autenticación.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 401,
+                  "error": "Acceso no autorizado, falta el token de autenticación.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "La prepaga no existe.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 404,
+                  "error": "La prepaga no existe.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 500,
+                  "error": "Ocurrió un error inesperado.",
+                  "data": {}
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/prepaids": {
+      "get": {
+        "summary": "Obtener todos los prepagas asociados al usuario.",
+        "description": "Endpoint que permite obtener todos los prepagas asociados al usuario.",
+        "tags": [
+          "Usuario"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": true,
+                  "status": 200,
+                  "error": null,
+                  "data": [
+                    {
+                      "id": 1,
+                      "plan": "B",
+                      "number": 123456,
+                      "prepaid": {
+                        "id": 1,
+                        "name": "Prepaga 1"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error de autenticación.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 401,
+                  "error": "Acceso no autorizado, falta el token de autenticación.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "El usuario no existe.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 404,
+                  "error": "El usuario no existe.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 500,
+                  "error": "Ocurrió un error inesperado.",
+                  "data": {}
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/specialties": {
+      "get": {
+        "tags": [
+          "Especialidades"
+        ],
+        "summary": "Obtener todas las especialidades.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Se han obtenido todas las especialidades.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": true,
+                  "status": 200,
+                  "error": null,
+                  "data": [
+                    {
+                      "id": 1,
+                      "name": "Medicina"
+                    },
+                    {
+                      "id": 2,
+                      "name": "Farmacia"
+                    },
+                    {
+                      "id": 3,
+                      "name": "Farmacia"
+                    },
+                    {
+                      "id": 4,
+                      "name": "Farmacia"
+                    },
+                    {
+                      "id": 5,
+                      "name": "Farmacia"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error de autenticación.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 401,
+                  "error": "Acceso no autorizado, falta el token de autenticación.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 500,
+                  "error": "Ocurrió un error inesperado.",
+                  "data": {}
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Especialidades"
+        ],
+        "summary": "Crear una especialidad.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "El nombre de la especialidad.",
+                    "example": "Farmacia"
+                  }
+                },
+                "required": [
+                  "name"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Se ha creado correctamente la especialidad.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": true,
+                  "status": 201,
+                  "error": null,
+                  "data": {
+                    "id": 1,
+                    "name": "Farmacia"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "El cuerpo de la petición no es válido.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 400,
+                  "error": [
+                    {
+                      "field": "name",
+                      "message": "El nombre es obligatorio."
+                    }
+                  ],
+                  "data": {}
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error de autenticación.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 401,
+                  "error": "Acceso no autorizado, falta el token de autenticación.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "La especialidad ya existe.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 409,
+                  "error": "La especialidad ya existe.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 500,
+                  "error": "Ocurrió un error inesperado.",
+                  "data": {}
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/specialties/{specialtyId}/professionals": {
+      "get": {
+        "tags": [
+          "Especialidades"
+        ],
+        "summary": "Obtener todos los profesionales asociados a una especialidad.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "specialtyId",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": "El id de la especialidad.",
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Se han obtenido todos los profesionales asociados a la especialidad.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": true,
+                  "status": 200,
+                  "error": null,
+                  "data": [
+                    {
+                      "id": 1,
+                      "full_name": "Juan Perez",
+                      "email": "juanperez@gmail.com",
+                      "phone_number": 5698989898,
+                      "createdAt": "2022-03-21T22:00:00.000Z"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "El cuerpo de la petición no es válido.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 400,
+                  "error": [
+                    {
+                      "field": "specialtyId",
+                      "message": "El specialtyId es obligatorio."
+                    }
+                  ],
+                  "data": {}
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error de autenticación.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 401,
+                  "error": "Acceso no autorizado, falta el token de autenticación.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "La especialidad no existe.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 404,
+                  "error": "La especialidad no existe.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 500,
+                  "error": "Ocurrió un error inesperado.",
+                  "data": {}
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/specialties/professionals/{professionalId}": {
+      "post": {
+        "tags": [
+          "Especialidades"
+        ],
+        "summary": "Añadir un profesional a una especialidad.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "professionalId",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": "El id del profesional.",
+            "example": 1
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "specialtyId": {
+                    "type": "integer",
+                    "format": "int32",
+                    "description": "El id de la especialidad.",
+                    "example": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Se ha añadido correctamente el profesional a la especialidad.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": true,
+                  "status": 201,
+                  "error": null,
+                  "data": "El profesional ha sido añadido correctamente a la especialidad."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "El cuerpo de la petición no es válido.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 400,
+                  "error": [
+                    {
+                      "field": "specialtyId",
+                      "message": "El specialtyId es obligatorio."
+                    }
+                  ],
+                  "data": {}
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error de autenticación.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 401,
+                  "error": "Acceso no autorizado, falta el token de autenticación.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "La especialidad no existe.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 404,
+                  "error": "La especialidad no existe.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "El profesional ya está asociado a la especialidad.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 409,
+                  "error": "El profesional ya está asociado a la especialidad.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 500,
+                  "error": "Ocurrió un error inesperado.",
+                  "data": {}
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Especialidades"
+        ],
+        "summary": "Eliminar un profesional de una especialidad.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "professionalId",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": "El id del profesional.",
+            "example": 1
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "specialtyId": {
+                    "type": "integer",
+                    "format": "int32",
+                    "description": "El id de la especialidad.",
+                    "example": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Se ha eliminado correctamente el profesional de la especialidad.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": true,
+                  "status": 200,
+                  "error": null,
+                  "data": "El profesional ha sido eliminado correctamente de la especialidad."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "El cuerpo de la petición no es válido.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 400,
+                  "error": [
+                    {
+                      "field": "specialtyId",
+                      "message": "El specialtyId es obligatorio."
+                    }
+                  ],
+                  "data": {}
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error de autenticación.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 401,
+                  "error": "Acceso no autorizado, falta el token de autenticación.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "La especialidad no existe.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 404,
+                  "error": "La especialidad no existe.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 500,
+                  "error": "Ocurrió un error inesperado.",
+                  "data": {}
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/specialties/{specialtyId}": {
+      "delete": {
+        "tags": [
+          "Especialidades"
+        ],
+        "summary": "Eliminar una especialidad.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "specialtyId",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": "El id de la especialidad.",
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Se ha eliminado correctamente la especialidad.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": true,
+                  "status": 200,
+                  "error": null,
+                  "data": "La especialidad ha sido eliminada correctamente."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "El cuerpo de la petición no es válido.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 400,
+                  "error": [
+                    {
+                      "field": "specialtyId",
+                      "message": "El specialtyId es obligatorio."
+                    }
+                  ],
+                  "data": {}
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error de autenticación.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 401,
+                  "error": "Acceso no autorizado, falta el token de autenticación.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "La especialidad no existe.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 404,
+                  "error": "La especialidad no existe.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 500,
+                  "error": "Ocurrió un error inesperado.",
+                  "data": {}
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/appointments": {
+      "post": {
+        "tags": [
+          "Turnos"
+        ],
+        "summary": "Crear un turno.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "professionalId": {
+                    "type": "integer",
+                    "format": "int32",
+                    "description": "El id del profesional.",
+                    "example": 1
+                  },
+                  "patientId": {
+                    "type": "integer",
+                    "format": "int32",
+                    "description": "El id del paciente.",
+                    "example": 1
+                  },
+                  "specialtyId": {
+                    "type": "integer",
+                    "format": "int32",
+                    "description": "El id de la especialidad.",
+                    "example": 1
+                  },
+                  "date": {
+                    "type": "string",
+                    "format": "date",
+                    "description": "La fecha del turno.",
+                    "example": "2022-03-21T00:00:00.000Z"
+                  },
+                  "startTime": {
+                    "type": "string",
+                    "format": "time",
+                    "description": "La hora de inicio del turno.",
+                    "example": "08:00:00"
+                  },
+                  "endTime": {
+                    "type": "string",
+                    "format": "time",
+                    "description": "La hora de finalización del turno.",
+                    "example": "09:00:00"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Se ha creado correctamente el turno.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": true,
+                  "status": 201,
+                  "error": null,
+                  "data": {
+                    "id": 1,
+                    "professional_id": 1,
+                    "patient_id": 1,
+                    "specialty_id": 1,
+                    "date": "2022-03-21T00:00:00.000Z",
+                    "start_time": "08:00:00",
+                    "end_time": "09:00:00",
+                    "status": "Scheduled",
+                    "notes": null
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "El cuerpo de la petición no es válido.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 400,
+                  "error": [
+                    {
+                      "field": "professionalId",
+                      "message": "El profesionalId es obligatorio."
+                    },
+                    {
+                      "field": "patientId",
+                      "message": "El patientId es obligatorio."
+                    },
+                    {
+                      "field": "specialtyId",
+                      "message": "El specialtyId es obligatorio."
+                    },
+                    {
+                      "field": "date",
+                      "message": "La fecha es obligatoria."
+                    },
+                    {
+                      "field": "startTime",
+                      "message": "La hora de inicio es obligatoria."
+                    },
+                    {
+                      "field": "endTime",
+                      "message": "La hora de finalización es obligatoria."
+                    }
+                  ],
+                  "data": {}
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error de autenticación.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 401,
+                  "error": "Acceso no autorizado, falta el token de autenticación.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "El usuario no tiene permiso para crear turnos.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 403,
+                  "error": "El usuario no tiene permiso para crear turnos.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Uno o varios de los ids no existe.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 404,
+                  "error": "Uno o varios de los ids no existe.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "El turno está reservado.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 409,
+                  "error": "El turno está reservado.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 500,
+                  "error": "Ocurrió un error inesperado.",
+                  "data": {}
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/appointments/complete/{appointmentId}": {
+      "patch": {
+        "tags": [
+          "Turnos"
+        ],
+        "summary": "Completar un turno.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "appointmentId",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Turno completado con éxito.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": true,
+                  "status": 200,
+                  "error": null,
+                  "data": {}
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error de validación del servidor.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 400,
+                  "error": "El campo 'appointmentId' es obligatorio.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Turno no encontrado.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 404,
+                  "error": "El turno no existe.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Turno ya completado.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 409,
+                  "error": "El turno ya fue completado.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 500,
+                  "error": "Ocurrió un error inesperado.",
+                  "data": {}
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/appointments/{appointmentId}": {
+      "delete": {
+        "tags": [
+          "Turnos"
+        ],
+        "summary": "Cancelar un turno.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "appointmentId",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": "El id del turno.",
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Se ha cancelado correctamente el turno.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": true,
+                  "status": 200,
+                  "error": null,
+                  "data": "El turno ha sido cancelado correctamente."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "El cuerpo de la petición no es válido.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 400,
+                  "error": [
+                    {
+                      "field": "appointmentId",
+                      "message": "El appointmentId es obligatorio."
+                    }
+                  ],
+                  "data": {}
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error de autenticación.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 401,
+                  "error": "Acceso no autorizado, falta el token de autenticación.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "El turno no existe.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 404,
+                  "error": "El turno no existe.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "El turno ya fue cancelado.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 409,
+                  "error": "El turno ya fue cancelado.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 500,
+                  "error": "Ocurrió un error inesperado.",
+                  "data": {}
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/appointments/professionals/{professionalId}": {
+      "get": {
+        "tags": [
+          "Turnos"
+        ],
+        "summary": "Obtener todos los turnos cancelados, reservados o completados de un profesional.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "professionalId",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": "El id del profesional.",
+            "example": 1
+          },
+          {
+            "in": "query",
+            "name": "startDate",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "description": "La fecha de inicio de busqueda.",
+            "example": "2022-03-21T00:00:00.000Z"
+          },
+          {
+            "in": "query",
+            "name": "endDate",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "description": "La fecha de finalización de busqueda.",
+            "example": "2022-03-21T00:00:00.000Z"
+          },
+          {
+            "in": "query",
+            "name": "patientId",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": "El id del paciente.",
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Se han obtenido todos los turnos de un profesional.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": true,
+                  "status": 200,
+                  "error": null,
+                  "data": [
+                    {
+                      "id": 1,
+                      "date": "2022-03-21T00:00:00.000Z",
+                      "start_time": "08:00:00",
+                      "end_time": "09:00:00",
+                      "status": "Scheduled",
+                      "notes": null,
+                      "specialty": [
+                        {
+                          "name": "Pediatria"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "El cuerpo de la petición no es válido.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 400,
+                  "error": [
+                    {
+                      "field": "professionalId",
+                      "message": "El profesionalId es obligatorio."
+                    }
+                  ],
+                  "data": {}
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error de autenticación.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 401,
+                  "error": "Acceso no autorizado, falta el token de autenticación.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "El profesional no existe.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 404,
+                  "error": "El profesional no existe.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 500,
+                  "error": "Ocurrió un error inesperado.",
+                  "data": {}
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/appointments/professionals/{professionalId}/availability": {
+      "get": {
+        "tags": [
+          "Turnos"
+        ],
+        "summary": "Obtener la disponibilidad de turnos de un profesional.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "professionalId",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": "El id del profesional.",
+            "example": 1
+          },
+          {
+            "in": "query",
+            "name": "startDate",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "description": "La fecha de inicio de busqueda.",
+            "example": "2022-03-21T00:00:00.000Z"
+          },
+          {
+            "in": "query",
+            "name": "endDate",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "description": "La fecha de finalización de busqueda.",
+            "example": "2022-03-21T00:00:00.000Z"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Se han obtenido todas las reservas de turnos de un profesional.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": true,
+                  "status": 200,
+                  "error": null,
+                  "data": [
+                    {
+                      "date": "2022-03-21T00:00:00.000Z",
+                      "slots": [
+                        {
+                          "start_time": "08:00:00",
+                          "end_time": "09:00:00"
+                        },
+                        {
+                          "start_time": "08:00:00",
+                          "end_time": "09:00:00"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "El cuerpo de la petición no es válido.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 400,
+                  "error": [
+                    {
+                      "field": "professionalId",
+                      "message": "El profesionalId es obligatorio."
+                    }
+                  ],
+                  "data": {}
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error de autenticación.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 401,
+                  "error": "Acceso no autorizado, falta el token de autenticación.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "El profesional no existe.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 404,
+                  "error": "El profesional no existe.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 500,
+                  "error": "Ocurrió un error inesperado.",
+                  "data": {}
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/appointments/patients/{patientId}": {
+      "get": {
+        "tags": [
+          "Turnos"
+        ],
+        "summary": "Obtener todos los turnos cancelados, reservados o completados de un paciente.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "patientId",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": "El id del paciente.",
+            "example": 1
+          },
+          {
+            "in": "query",
+            "name": "startDate",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "description": "La fecha de inicio de busqueda.",
+            "example": "2022-03-21T00:00:00.000Z"
+          },
+          {
+            "in": "query",
+            "name": "endDate",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "description": "La fecha de finalización de busqueda.",
+            "example": "2022-03-21T00:00:00.000Z"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Se han obtenido todos los turnos de un paciente.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": true,
+                  "status": 200,
+                  "error": null,
+                  "data": [
+                    {
+                      "id": 1,
+                      "date": "2022-03-21T00:00:00.000Z",
+                      "start_time": "08:00:00",
+                      "end_time": "09:00:00",
+                      "status": "Scheduled",
+                      "notes": null,
+                      "specialty": [
+                        {
+                          "name": "Pediatria"
+                        }
+                      ],
+                      "professional": {
+                        "full_name": "Juan Perez",
+                        "email": "juanperez@gmail.com",
+                        "phone_number": 5698989898
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "El cuerpo de la petición no es válido.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 400,
+                  "error": [
+                    {
+                      "field": "patientId",
+                      "message": "El patientId es obligatorio."
+                    }
+                  ],
+                  "data": {}
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error de autenticación.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 401,
+                  "error": "Acceso no autorizado, falta el token de autenticación.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "El paciente no existe.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 404,
+                  "error": "El paciente no existe.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 500,
+                  "error": "Ocurrió un error inesperado.",
+                  "data": {}
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/schedules/{professionalId}": {
+      "get": {
+        "tags": [
+          "Horarios del Profesional"
+        ],
+        "summary": "Obtener todos los horarios del profesional.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "professionalId",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": "El id del profesional.",
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Se han obtenido todos los horarios del profesional.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": true,
+                  "status": 200,
+                  "error": null,
+                  "data": [
+                    {
+                      "id": 1,
+                      "professional_id": 1,
+                      "day_of_week": "Lunes",
+                      "start_time": "08:00:00",
+                      "end_time": "09:00:00",
+                      "appointment_duration": 1
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "El cuerpo de la petición no es válido.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 400,
+                  "error": [
+                    {
+                      "field": "professionalId",
+                      "message": "El profesionalId es obligatorio."
+                    }
+                  ],
+                  "data": {}
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error de autenticación.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 401,
+                  "error": "Acceso no autorizado, falta el token de autenticación.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "El profesional no existe.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 404,
+                  "error": "El profesional no existe.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 500,
+                  "error": "Ocurrió un error inesperado.",
+                  "data": {}
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Horarios del Profesional"
+        ],
+        "summary": "Añadir un horario del profesional.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "professionalId",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": "El id del profesional.",
+            "example": 1
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "dayOfWeek": {
+                    "type": "string",
+                    "description": "El día del horario.",
+                    "example": "Lunes"
+                  },
+                  "startTime": {
+                    "type": "string",
+                    "format": "time",
+                    "description": "La hora de inicio del horario.",
+                    "example": "08:00:00"
+                  },
+                  "endTime": {
+                    "type": "string",
+                    "format": "time",
+                    "description": "La hora de finalización del horario.",
+                    "example": "09:00:00"
+                  },
+                  "appointmentDuration": {
+                    "type": "integer",
+                    "format": "int32",
+                    "description": "La duración del turno.",
+                    "example": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Se ha añadido correctamente el horario del profesional.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": true,
+                  "status": 201,
+                  "error": null,
+                  "data": {
+                    "id": 1,
+                    "professional_id": 1,
+                    "day_of_week": "Lunes",
+                    "start_time": "08:00:00",
+                    "end_time": "09:00:00",
+                    "appointment_duration": 1
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "El cuerpo de la petición no es válido.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 400,
+                  "error": [
+                    {
+                      "field": "professionalId",
+                      "message": "El profesionalId es obligatorio."
+                    },
+                    {
+                      "field": "dayOfWeek",
+                      "message": "El dayOfWeek es obligatorio."
+                    },
+                    {
+                      "field": "startTime",
+                      "message": "La hora de inicio es obligatoria."
+                    },
+                    {
+                      "field": "endTime",
+                      "message": "La hora de finalización es obligatoria."
+                    },
+                    {
+                      "field": "appointmentDuration",
+                      "message": "La duración es obligatoria."
+                    }
+                  ],
+                  "data": {}
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error de autenticación.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 401,
+                  "error": "Acceso no autorizado, falta el token de autenticación.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "El profesional no existe.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 404,
+                  "error": "El profesional no existe.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "El profesional ya tiene un horario en ese rango horario.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 409,
+                  "error": "El profesional ya tiene un horario en ese rango horario.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 500,
+                  "error": "Ocurrió un error inesperado.",
+                  "data": {}
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Horarios del Profesional"
+        ],
+        "summary": "Eliminar un horario del profesional.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "professionalScheduleId",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": "El id del horario del profesional.",
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Se ha eliminado correctamente el horario del profesional.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": true,
+                  "status": 200,
+                  "error": null,
+                  "data": "El horario del profesional ha sido eliminado correctamente."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "El cuerpo de la petición no es válido.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 400,
+                  "error": [
+                    {
+                      "field": "professionalScheduleId",
+                      "message": "El profesionalScheduleId es obligatorio."
+                    }
+                  ],
+                  "data": {}
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error de autenticación.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 401,
+                  "error": "Acceso no autorizado, falta el token de autenticación.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "El horario del profesional no existe.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 404,
+                  "error": "El horario profesional no existe.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 500,
+                  "error": "Ocurrió un error inesperado."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/schedules/{professionalId}/block": {
+      "get": {
+        "tags": [
+          "Horarios del Profesional"
+        ],
+        "summary": "Obtener todos los bloqueos de horario del profesional.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "professionalId",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": "El id del profesional.",
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Se han obtenido todos los bloqueos de horario del profesional.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": true,
+                  "status": 200,
+                  "error": null,
+                  "data": [
+                    {
+                      "id": 1,
+                      "professional_id": 1,
+                      "date": "2022-03-21T00:00:00.000Z",
+                      "start_time": "08:00:00",
+                      "end_time": "09:00:00",
+                      "reason": "Vacaciones"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "El cuerpo de la petición no es válido.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 400,
+                  "error": [
+                    {
+                      "field": "professionalId",
+                      "message": "El profesionalId es obligatorio."
+                    }
+                  ],
+                  "data": {}
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error de autenticación.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 401,
+                  "error": "Acceso no autorizado, falta el token de autenticación.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "El profesional no existe.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 404,
+                  "error": "El profesional no existe.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 500,
+                  "error": "Ocurrió un error inesperado.",
+                  "data": {}
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Horarios del Profesional"
+        ],
+        "summary": "Crear un bloqueo de horario.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "professionalId",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": "El id del profesional.",
+            "example": 1
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "date": {
+                    "type": "string",
+                    "format": "date",
+                    "description": "La fecha del bloqueo.",
+                    "example": "2022-03-21T00:00:00.000Z"
+                  },
+                  "startTime": {
+                    "type": "string",
+                    "format": "time",
+                    "description": "La hora de inicio del bloqueo.",
+                    "example": "08:00:00"
+                  },
+                  "endTime": {
+                    "type": "string",
+                    "format": "time",
+                    "description": "La hora de finalización del bloqueo.",
+                    "example": "09:00:00"
+                  },
+                  "reason": {
+                    "type": "string",
+                    "description": "La razón del bloqueo.",
+                    "example": "Vacaciones"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Se ha creado correctamente el bloqueo de horario.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": true,
+                  "status": 201,
+                  "error": null,
+                  "data": {
+                    "id": 1,
+                    "professional_id": 1,
+                    "date": "2022-03-21T00:00:00.000Z",
+                    "start_time": "08:00:00",
+                    "end_time": "09:00:00",
+                    "reason": "Vacaciones"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "El cuerpo de la petición no es válido.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 400,
+                  "error": [
+                    {
+                      "field": "professionalId",
+                      "message": "El profesionalId es obligatorio."
+                    },
+                    {
+                      "field": "date",
+                      "message": "La fecha es obligatoria."
+                    },
+                    {
+                      "field": "startTime",
+                      "message": "La hora de inicio es obligatoria."
+                    },
+                    {
+                      "field": "endTime",
+                      "message": "La hora de finalización es obligatoria."
+                    },
+                    {
+                      "field": "reason",
+                      "message": "La razón es obligatoria."
+                    }
+                  ],
+                  "data": {}
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error de autenticación.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 401,
+                  "error": "Acceso no autorizado, falta el token de autenticación.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "El profesional no existe.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 404,
+                  "error": "El profesional no existe.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 500,
+                  "error": "Ocurrió un error inesperado.",
+                  "data": {}
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Horarios del Profesional"
+        ],
+        "summary": "Eliminar un bloqueo de horario del profesional.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "professionalScheduleBlockId",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": "El id del bloqueo de horario del profesional.",
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Se ha eliminado correctamente el bloqueo de horario del profesional.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": true,
+                  "status": 200,
+                  "error": null,
+                  "data": "El bloqueo de horario del profesional ha sido eliminado correctamente."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "El cuerpo de la petición no es válido.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 400,
+                  "error": [
+                    {
+                      "field": "professionalScheduleBlockId",
+                      "message": "El profesionalScheduleBlockId es obligatorio."
+                    }
+                  ],
+                  "data": {}
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error de autenticación.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 401,
+                  "error": "Acceso no autorizado, falta el token de autenticación.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "El bloqueo del profesional no existe.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 404,
+                  "error": "El bloqueo del profesional no existe.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 500,
+                  "error": "Ocurrió un error inesperado.",
+                  "data": {}
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/prepaids": {
+      "post": {
+        "tags": [
+          "Prepagas"
+        ],
+        "summary": "Crear una prepaga.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "El nombre de la prepaga.",
+                    "example": "Prepaga 1"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Se ha creado correctamente la prepaga.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": true,
+                  "status": 201,
+                  "error": null,
+                  "data": {
+                    "id": 1,
+                    "name": "Prepaga 1"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "El cuerpo de la petición no es válido.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 400,
+                  "error": [
+                    {
+                      "field": "name",
+                      "message": "El nombre es obligatorio."
+                    }
+                  ],
+                  "data": {}
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error de autenticación.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 401,
+                  "error": "Acceso no autorizado, falta el token de autenticación.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "La prepaga ya existe.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 409,
+                  "error": "Ya existe una prepaga asociada al usuario.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 500,
+                  "error": "Ocurrió un error inesperado.",
+                  "data": {}
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Prepagas"
+        ],
+        "summary": "Obtener todas las prepagas.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Se han obtenido todas las prepagas.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": true,
+                  "status": 200,
+                  "error": null,
+                  "data": [
+                    {
+                      "id": 1,
+                      "name": "Prepaga 1"
+                    },
+                    {
+                      "id": 2,
+                      "name": "Prepaga 2"
+                    },
+                    {
+                      "id": 3,
+                      "name": "Prepaga 3"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error de autenticación.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 401,
+                  "error": "Acceso no autorizado, falta el token de autenticación.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 500,
+                  "error": "Ocurrió un error inesperado.",
+                  "data": {}
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/prepaids/{prepaidId}": {
+      "delete": {
+        "tags": [
+          "Prepagas"
+        ],
+        "summary": "Eliminar una prepaga.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "prepaidId",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": "El id de la prepaga.",
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Se ha eliminado correctamente la prepaga.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": true,
+                  "status": 200,
+                  "error": null,
+                  "data": "La prepaga ha sido eliminada correctamente."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "El cuerpo de la petición no es válido.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 400,
+                  "error": [
+                    {
+                      "field": "prepaidId",
+                      "message": "El id de la prepaga es obligatorio."
+                    }
+                  ],
+                  "data": {}
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error de autenticación.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 401,
+                  "error": "Acceso no autorizado, falta el token de autenticación.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "La prepaga no existe.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 404,
+                  "error": "La prepaga no existe.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 500,
+                  "error": "Ocurrió un error inesperado.",
+                  "data": {}
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/medical-records/patients/{patientId}": {
+      "get": {
+        "tags": [
+          "Historia Clínica"
+        ],
+        "summary": "Obtener todos los registros médicos de un paciente.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "patientId",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": "El id del paciente.",
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Se han obtenido todos los registros médicos de un paciente.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": true,
+                  "status": 200,
+                  "error": null,
+                  "data": [
+                    {
+                      "id": 1,
+                      "patient_id": 1,
+                      "record": "Paciente con fiebre leve",
+                      "file_url": "https://example.com/file.pdf"
+                    },
+                    {
+                      "id": 2,
+                      "patient_id": 1,
+                      "record": "Paciente con fiebre moderada",
+                      "file_url": "https://example.com/file.pdf"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "El cuerpo de la petición no es válido.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 400,
+                  "error": [
+                    {
+                      "field": "patientId",
+                      "message": "El pacienteId es obligatorio."
+                    }
+                  ],
+                  "data": {}
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error de autenticación.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 401,
+                  "error": "Acceso no autorizado, falta el token de autenticación.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "El paciente no existe.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 404,
+                  "error": "El paciente no existe.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 500,
+                  "error": "Ocurrió un error inesperado.",
+                  "data": {}
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Historia Clínica"
+        ],
+        "summary": "Crear un registro médico.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "patientId",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": "El id del paciente.",
+            "example": 1
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "record": {
+                    "type": "string",
+                    "description": "El registro médico.",
+                    "example": "Paciente con fiebre leve"
+                  },
+                  "fileUrl": {
+                    "type": "string",
+                    "description": "La url del archivo.",
+                    "example": "https://example.com/file.pdf"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Se ha creado correctamente el registro médico.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": true,
+                  "status": 201,
+                  "error": null,
+                  "data": {
+                    "id": 1,
+                    "patient_id": 1,
+                    "record": "Paciente con fiebre leve",
+                    "file_url": "https://example.com/file.pdf"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "El cuerpo de la petición no es válido.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 400,
+                  "error": [
+                    {
+                      "field": "patientId",
+                      "message": "El pacienteId es obligatorio."
+                    },
+                    {
+                      "field": "record",
+                      "message": "El registro médico es obligatorio."
+                    },
+                    {
+                      "field": "fileUrl",
+                      "message": "La url del archivo es obligatoria."
+                    }
+                  ],
+                  "data": {}
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error de autenticación.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 401,
+                  "error": "Acceso no autorizado, falta el token de autenticación.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "El paciente no existe.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 404,
+                  "error": "El paciente no existe.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 500,
+                  "error": "Ocurrió un error inesperado.",
+                  "data": {}
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/medical-records/{medicalRecordId}": {
+      "delete": {
+        "tags": [
+          "Historia Clínica"
+        ],
+        "summary": "Eliminar un registro médico.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "medicalRecordId",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": "El id del registro médico.",
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Se ha eliminado correctamente el registro médico.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": true,
+                  "status": 200,
+                  "error": null,
+                  "data": "El registro médico ha sido eliminado correctamente."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "El cuerpo de la petición no es válido.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 400,
+                  "error": [
+                    {
+                      "field": "medicalRecordId",
+                      "message": "El medicalRecordId es obligatorio."
+                    }
+                  ],
+                  "data": {}
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error de autenticación.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 401,
+                  "error": "Acceso no autorizado, falta el token de autenticación.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "El registro médico no existe.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 404,
+                  "error": "El registro médico no existe.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 500,
+                  "error": "Ocurrió un error inesperado.",
+                  "data": {}
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/notifications": {
+      "get": {
+        "tags": [
+          "Notificaciones"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Obtener todas las notificaciones del usuario.",
+        "description": "Obtener todas las notificaciones del usuario.",
+        "responses": {
+          "200": {
+            "description": "Notificaciones obtenidas correctamente.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": true,
+                  "status": 200,
+                  "error": null,
+                  "data": [
+                    {
+                      "id": 1,
+                      "user_id": 1,
+                      "message": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                      "read": false
+                    },
+                    {
+                      "id": 2,
+                      "user_id": 1,
+                      "message": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                      "read": false
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error de autenticación.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 401,
+                  "error": "Acceso no autorizado, falta el token de autenticación.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 500,
+                  "error": "Ocurrió un error inesperado.",
+                  "data": {}
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/notifications/{notificationId}/read": {
+      "post": {
+        "tags": [
+          "Notificaciones"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Marcar una notificación como leída.",
+        "description": "Marcar una notificación como leída.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "notificationId",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": "El id de la notificación.",
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Notificación marcada como leída correctamente.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": true,
+                  "status": 200,
+                  "error": null,
+                  "data": "La notificación fue leída correctamente."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "El cuerpo de la petición no es válido.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 400,
+                  "error": [
+                    {
+                      "field": "notificationId",
+                      "message": "El id de la notificación es obligatorio."
+                    }
+                  ],
+                  "data": {}
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error de autenticación.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 401,
+                  "error": "Acceso no autorizado, falta el token de autenticación.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "La notificación no existe.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 404,
+                  "error": "La notificación no existe.",
+                  "data": {}
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "ok": false,
+                  "status": 500,
+                  "error": "Ocurrió un error inesperado.",
+                  "data": {}
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

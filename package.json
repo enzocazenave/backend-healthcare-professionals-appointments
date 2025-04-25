@@ -9,7 +9,7 @@
   },
   "files": [
     "src/index.js",
-    "src/swagger.yaml"
+    "src/swagger.json"
   ],
   "keywords": [],
   "author": "",
