@@ -53,6 +53,18 @@ CREATE TABLE users (
   FOREIGN KEY (role_id) REFERENCES roles(id)
 );
 
+CREATE TABLE medical_records (
+  id INT IDENTITY,
+  professional_id INT NOT NULL,
+  patient_id INT NOT NULL,
+  record TEXT NOT NULL,
+  file_url TEXT NOT NULL,
+
+  PRIMARY KEY (id),
+  FOREIGN KEY (professional_id) REFERENCES users(id),
+  FOREIGN KEY (patient_id) REFERENCES users(id)
+);
+
 CREATE TABLE specialties (
   id INT IDENTITY,
   name VARCHAR(255) NOT NULL,
