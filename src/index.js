@@ -1,6 +1,7 @@
 import swaggerUi from 'swagger-ui-express';
 
 import express from 'express';
+import YAML from 'yamljs';
 
 const app = express();
 
