@@ -3503,15 +3503,19 @@
                   "data": [
                     {
                       "id": 1,
+                      "professional_id": 2,
                       "patient_id": 1,
                       "record": "Paciente con fiebre leve",
-                      "file_url": "https://example.com/file.pdf"
+                      "file_url": "https://example.com/file.pdf",
+                      "createdAt": "2022-03-21T00:00:00.000Z"
                     },
                     {
                       "id": 2,
+                      "professional_id": 2,
                       "patient_id": 1,
                       "record": "Paciente con fiebre moderada",
-                      "file_url": "https://example.com/file.pdf"
+                      "file_url": "https://example.com/file.pdf",
+                      "createdAt": "2022-03-23T00:00:00.000Z"
                     }
                   ]
                 }
