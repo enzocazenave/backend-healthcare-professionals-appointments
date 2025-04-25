@@ -41,7 +41,8 @@ app.get('/api-docs', (req, res) => {
               url: '/swagger.json',
               dom_id: '#swagger-ui',
               presets: [SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset],
-              layout: "StandaloneLayout"
+              layout: "StandaloneLayout",
+              displaySearch: false
             });
           };
         </script>
