@@ -5,6 +5,6 @@ import YAML from 'yamljs';
 
 const app = express();
 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(YAML.load('./docs/swagger.yaml'), { customSiteTitle: 'Healthcare Professionals Appointments API' }));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(YAML.load('./swagger.yaml'), { customSiteTitle: 'Healthcare Professionals Appointments API' }));
 
 export default app;
