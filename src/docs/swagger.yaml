@@ -2300,13 +2300,17 @@ paths:
                 error: null
                 data:
                   - id: 1
+                    professional_id: 2
                     patient_id: 1
                     record: Paciente con fiebre leve
                     file_url: https://example.com/file.pdf
+                    createdAt: 2022-03-21
                   - id: 2
+                    professional_id: 2
                     patient_id: 1
                     record: Paciente con fiebre moderada
                     file_url: https://example.com/file.pdf
+                    createdAt: 2022-03-23
         '400':
           description: El cuerpo de la petición no es válido.
           content:

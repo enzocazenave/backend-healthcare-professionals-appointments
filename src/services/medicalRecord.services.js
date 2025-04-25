@@ -24,7 +24,7 @@ const medicalRecordServices = {
     }
   },
 
-  createPatientMedicalRecord: async ({ patientId, record, fileUrl }) => {
+  createPatientMedicalRecord: async ({ professionalId, patientId, record, fileUrl }) => {
     try {
       const patient = await db.User.findOne({ where: { id: patientId, role_id: 1 } });
 
@@ -35,6 +35,7 @@ const medicalRecordServices = {
       }
 
       const medicalRecord = await db.MedicalRecord.create({
+        professional_id: professionalId,
         patient_id: patientId,
         record: record,
         file_url: fileUrl
@@ -42,6 +43,7 @@ const medicalRecordServices = {
 
       return medicalRecord.get({ plain: true });
     } catch (error) {
+      console.log(error)
       throw error;
     }
   },

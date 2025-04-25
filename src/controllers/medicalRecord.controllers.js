@@ -16,6 +16,7 @@ const medicalRecordControllers = {
   createPatientMedicalRecord: async (req = request, res = response) => {
     try {
       const response = await medicalRecordServices.createPatientMedicalRecord({
+        professionalId: req.user.userId,
         patientId: req.params.patientId,
         record: req.body.record,
         fileUrl: req.body.fileUrl
