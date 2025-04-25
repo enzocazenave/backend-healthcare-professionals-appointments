@@ -1,5 +1,4 @@
 import express from 'express';
-import swaggerUi from 'swagger-ui-express';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -7,13 +6,55 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const swaggerPath = path.join(__dirname, 'swagger.json');
-const swaggerDocument = JSON.parse(fs.readFileSync(swaggerPath, 'utf8'));
-
 const app = express();
 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
-  customSiteTitle: 'Healthcare Professionals Appointments API'
-}));
+const swaggerJson = JSON.parse(
+  fs.readFileSync(path.join(__dirname, 'swagger.json'), 'utf8')
+);
 
-export default app;
+app.get('/api-docs', (req, res) => {
+  res.send(`
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <style>
+          * {
+            box-sizing: border-box;
+            padding: 0;
+            margin: 0;
+          }
+        </style>
+        <title>Healthcare Professionals Appointments API</title>
+        <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist/swagger-ui.css" />
+      </head>
+      <body>
+        <header style="font-family: sans-serif; padding: 10px; background-color: #282c34; color: white;">
+          <h1>GRUPO 7 - Tu Salud
+          <p style="font-size: 16px; font-weight: normal;">Cazenave Enzo, Larre Santiago, Berntsen Nikolas, Ballesta Lucas</p>
+        </header>
+        <div id="swagger-ui"></div>
+        <script src="https://unpkg.com/swagger-ui-dist/swagger-ui-bundle.js"></script>
+        <script src="https://unpkg.com/swagger-ui-dist/swagger-ui-standalone-preset.js"></script>
+        <script>
+          window.onload = () => {
+            SwaggerUIBundle({
+              url: '/swagger.json',
+              dom_id: '#swagger-ui',
+              presets: [SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset],
+              layout: "StandaloneLayout"
+            });
+          };
+        </script>
+      </body>
+    </html>
+  `);
+});
+
+app.get('/swagger.json', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(swaggerJson);
+});
+
+app.listen(3000, () => {
+  console.log('Server is running on port 3000');
+});
