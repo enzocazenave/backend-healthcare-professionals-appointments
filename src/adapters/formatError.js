@@ -28,6 +28,7 @@ const errors = {
     RECORD_IS_REQUIRED: 'El registro médico es obligatorio.',
     FILE_URL_IS_REQUIRED: 'La url del archivo es obligatoria.',
     MEDICAL_RECORD_ID_IS_REQUIRED: 'El id del registro médico es obligatorio.',
+    NOTIFICATION_ID_IS_REQUIRED: 'El id de la notificación es obligatorio.',
   },
   middlewareTokenValidator: {
     TOKEN_NOT_FOUND: 'Acceso no autorizado, no se encontró el token.',
@@ -89,6 +90,9 @@ const errors = {
   medicalRecordServices: {
     PATIENT_NOT_FOUND: 'El paciente no existe.',
     MEDICAL_RECORD_NOT_FOUND: 'El registro médico no existe.'
+  },
+  notificationServices: {
+    NOTIFICATION_NOT_FOUND: 'La notificación no existe.'
   }
 }
 
