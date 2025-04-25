@@ -9,7 +9,7 @@ const router = Router();
 
 router.get('/', [
   tokenValidator
-], specialtyControllers.getSpecialties)
+], specialtyControllers.getSpecialties);
 
 router.get('/:specialtyId/professionals', [
   tokenValidator,

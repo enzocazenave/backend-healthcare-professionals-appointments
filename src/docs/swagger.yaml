@@ -2495,3 +2495,112 @@ paths:
                 status: 500
                 error: Ocurrió un error inesperado.
                 data: {}
+  /notifications:
+    get:
+      tags:
+        - Notificaciones
+      security:
+        - bearerAuth: []
+      summary: Obtener todas las notificaciones del usuario.
+      description: Obtener todas las notificaciones del usuario.
+      responses:
+        '200':
+          description: Notificaciones obtenidas correctamente.
+          content:
+            application/json:
+              example:
+                ok: true
+                status: 200
+                error: null
+                data:
+                  - id: 1
+                    user_id: 1
+                    message: Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                    read: false
+                  - id: 2
+                    user_id: 1
+                    message: Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                    read: false
+        '401':
+          description: Error de autenticación.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 401
+                error: Acceso no autorizado, falta el token de autenticación.
+                data: {}
+        '500':
+          description: Error interno del servidor.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 500
+                error: Ocurrió un error inesperado.
+                data: {}
+  /notifications/{notificationId}/read:
+    post:
+      tags:
+        - Notificaciones
+      security:
+        - bearerAuth: []
+      summary: Marcar una notificación como leída.
+      description: Marcar una notificación como leída.
+      parameters:
+        - in: path
+          name: notificationId
+          required: true
+          schema:
+            type: integer
+            format: int32
+          description: El id de la notificación.
+          example: 1
+      responses:
+        '200':
+          description: Notificación marcada como leída correctamente.
+          content:
+            application/json:
+              example:
+                ok: true
+                status: 200
+                error: null
+                data: La notificación fue leída correctamente.
+        '400':
+          description: El cuerpo de la petición no es válido.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 400
+                error: 
+                  - field: notificationId
+                    message: El id de la notificación es obligatorio.
+                data: {}
+        '401':
+          description: Error de autenticación.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 401
+                error: Acceso no autorizado, falta el token de autenticación.
+                data: {}
+        '404':
+          description: La notificación no existe.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 404
+                error: La notificación no existe.
+                data: {}
+        '500':
+          description: Error interno del servidor.
+          content:
+            application/json:
+              example:
+                ok: false
+                status: 500
+                error: Ocurrió un error inesperado. 
+                data: {}

@@ -13,6 +13,7 @@ import specialtyRoutes from '../routes/specialty.routes.js'
 import scheduleRoutes from '../routes/schedule.routes.js'
 import prepaidRoutes from '../routes/prepaid.routes.js'
 import medicalRecordRoutes from '../routes/medicalRecord.routes.js'
+import notificationRoutes from '../routes/notification.routes.js'
 
 class Server {
   constructor() {
@@ -37,6 +38,7 @@ class Server {
     this.app.use('/schedules', scheduleRoutes);
     this.app.use('/prepaids', prepaidRoutes);
     this.app.use('/medical-records', medicalRecordRoutes);
+    this.app.use('/notifications', notificationRoutes);
   }
 
   start() {
