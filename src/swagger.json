@@ -1,9 +1,9 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "Healthcare Professionals Appointments",
+    "title": "Tu Salud - Grupo 7",
     "version": "1.0.0",
-    "description": "Backend for healthcare professionals appointments"
+    "description": "Backend de aplicación Tu Salud"
   },
   "servers": [
     {
