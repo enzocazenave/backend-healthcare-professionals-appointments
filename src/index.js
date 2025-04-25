@@ -18,6 +18,9 @@ app.get('/api-docs', (req, res) => {
     <html>
       <head>
         <style>
+          .topbar .download-url-wrapper {
+            display: none !important;
+          }
           * {
             box-sizing: border-box;
             padding: 0;
@@ -42,7 +45,6 @@ app.get('/api-docs', (req, res) => {
               dom_id: '#swagger-ui',
               presets: [SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset],
               layout: "StandaloneLayout",
-              displaySearch: false
             });
           };
         </script>
