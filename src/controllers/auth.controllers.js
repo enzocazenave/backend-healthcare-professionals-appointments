@@ -89,6 +89,19 @@ const authControllers = {
     }
   },
 
+  validateResetPasswordCode: async (req = request, res = response) => {
+    try {
+      await authServices.validateResetPasswordCode({
+        email: req.body.email,
+        code: req.body.code
+      });
+
+      sendSuccessResponse(res, 200, {});
+    } catch(error) {
+      sendErrorResponse(res, error?.statusCode, error);
+    }
+  },
+
   resetPassword: async (req = request, res = response) => {
     try {
       const response = await authServices.resetPassword({

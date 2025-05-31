@@ -27,6 +27,12 @@ router.post("/forgot-password", [
   fieldValidator
 ], authControllers.forgotPassword); 
 
+router.post("/validate-reset-password-code", [
+  body('email', 'EMAIL_IS_REQUIRED').isString().isEmail(),
+  body('code', 'CODE_IS_REQUIRED').isInt(),
+  fieldValidator
+], authControllers.validateResetPasswordCode);
+
 router.post("/reset-password", [
   body('email', 'EMAIL_IS_REQUIRED').isString().isEmail(),
   body('password', 'PASSWORD_IS_REQUIRED').isString().isLength({ min: 6 }),

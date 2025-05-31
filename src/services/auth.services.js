@@ -157,6 +157,30 @@ const authServices = {
     }
   },
 
+  validateResetPasswordCode: async ({ email, code }) => {
+    try {
+      const passwordResetCode = await db.PasswordResetCode.findOne({ where: { code, email } });
+
+      if (!passwordResetCode) throw { 
+        layer: 'authServices', 
+        key: 'CODE_NOT_FOUND',
+        statusCode: 404
+      }
+
+      const isCodeExpired = passwordResetCode.expirates_at < new Date();
+
+      if (isCodeExpired) throw { 
+        layer: 'authServices', 
+        key: 'CODE_EXPIRED',
+        statusCode: 400
+      }
+
+      return "El código es válido.";
+    } catch(error) {
+      throw error;
+    }
+  },
+
   resetPassword: async ({ email, password, code  }) => { 
     try {
       const passwordResetCode = await db.PasswordResetCode.findOne({ where: { code, email } });
