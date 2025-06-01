@@ -29,6 +29,7 @@ const errors = {
     FILE_URL_IS_REQUIRED: 'La url del archivo es obligatoria.',
     MEDICAL_RECORD_ID_IS_REQUIRED: 'El id del registro médico es obligatorio.',
     NOTIFICATION_ID_IS_REQUIRED: 'El id de la notificación es obligatorio.',
+    DNI_IS_REQUIRED: 'El DNI es obligatorio.'
   },
   middlewareTokenValidator: {
     TOKEN_NOT_FOUND: 'Acceso no autorizado, no se encontró el token.',

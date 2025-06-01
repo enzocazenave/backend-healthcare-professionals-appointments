@@ -56,6 +56,17 @@ const appointmentControllers = {
     }
   },
 
+  getMoreRecentAppointmentsByPatientId: async (req = request, res = response) => {
+    try {
+      const response = await appointmentServices.getMoreRecentAppointmentsByPatientId({
+        patientId: req.params.patientId
+      });
+      sendSuccessResponse(res, 200, response);
+    } catch(error) {
+      sendErrorResponse(res, error?.statusCode, error);
+    }
+  },
+
   cancelAppointment: async (req = request, res = response) => {
     try {
       const response = await appointmentServices.cancelAppointment({

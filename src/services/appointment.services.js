@@ -64,9 +64,9 @@ const appointmentServices = {
 
       const appointmentDuration = differenceInMinutes(
         new Date(`1970-01-01T${endTime}:00`),
-        new Date(`1970-01-01T${startTime}:00`) 
+        new Date(`1970-01-01T${startTime}:00`)
       );
-      
+
       if (appointmentDuration !== professionalSchedule.appointment_duration) throw {
         layer: 'appointmentServices',
         key: 'APPOINTMENT_DURATION_IS_NOT_VALID',
@@ -147,7 +147,7 @@ const appointmentServices = {
       throw error;
     }
   },
-  
+
   getAppointmentsByProfessional: async ({ professionalId, startDate, endDate, patientId }) => {
     try {
       const professional = await db.User.findOne({ where: { id: professionalId, role_id: 2 } });
@@ -178,10 +178,10 @@ const appointmentServices = {
       if (patientId) {
         whereClause.patient_id = patientId;
       }
-      
+
       const appointments = await db.Appointment.findAll({
         where: whereClause,
-        attributes: { exclude: ['professional_id', 'patient_id', 'specialty_id' ] },
+        attributes: { exclude: ['professional_id', 'patient_id', 'specialty_id'] },
         include: [
           {
             model: db.Specialty,
@@ -196,7 +196,7 @@ const appointmentServices = {
       throw error;
     }
   },
-  
+
   getAppointmentsByPatient: async ({ patientId, startDate, endDate }) => {
     try {
       const patient = await db.User.findOne({ where: { id: patientId, role_id: 1 } });
@@ -209,13 +209,13 @@ const appointmentServices = {
 
       startDate = parse(startDate, 'yyyy-MM-dd', new Date());
       endDate = parse(endDate, 'yyyy-MM-dd', new Date());
-      
+
       const appointments = await db.Appointment.findAll({
         where: {
           patient_id: patientId,
           date: { [Sequelize.Op.gte]: startDate, [Sequelize.Op.lte]: endDate }
         },
-        attributes: { exclude: ['professional_id', 'patient_id', 'specialty_id' ] },
+        attributes: { exclude: ['professional_id', 'patient_id', 'specialty_id'] },
         include: [
           {
             model: db.Specialty,
@@ -229,13 +229,48 @@ const appointmentServices = {
           }
         ]
       });
-      
+
       return appointments;
     } catch (error) {
       throw error;
     }
   },
-  
+
+  getMoreRecentAppointmentsByPatientId: async ({ patientId }) => {
+    try {
+      const today = new Date();
+
+      const appointment = await db.Appointment.findOne({
+        where: {
+          patient_id: patientId,
+          appointment_state_id: { [Sequelize.Op.in]: [1, 3] },
+          date: { [Sequelize.Op.gte]: today }
+        },
+        order: [
+          ['date', 'ASC'],
+          ['start_time', 'ASC'],
+        ],
+        attributes: { exclude: ['professional_id', 'patient_id', 'specialty_id'] },
+        include: [
+          {
+            model: db.Specialty,
+            as: 'specialty',
+            attributes: ['name']
+          },
+          {
+            model: db.User,
+            as: 'professional',
+            attributes: ['full_name', 'email', 'phone_number']
+          }
+        ]
+      });
+
+      return appointment;
+    } catch (error) {
+      throw error;
+    }
+  },
+
   cancelAppointment: async ({ appointmentId }) => {
     try {
       const appointment = await db.Appointment.findByPk(appointmentId);
@@ -279,18 +314,18 @@ const appointmentServices = {
       });
 
       const schedule = await db.ProfessionalSchedule.findAll({
-        where: {  professional_id: professionalId },
+        where: { professional_id: professionalId },
       });
 
       const blocks = await db.ProfessionalScheduleBlock.findAll({
-        where: { 
+        where: {
           professional_id: professionalId,
           date: { [Sequelize.Op.gte]: startDateRange, [Sequelize.Op.lte]: endDateRange },
         },
       });
 
       const appointments = await db.Appointment.findAll({
-        where: { 
+        where: {
           professional_id: professionalId,
           date: { [Sequelize.Op.gte]: startDateRange, [Sequelize.Op.lte]: endDateRange },
           appointment_state_id: { [Sequelize.Op.in]: [1, 3] }
@@ -318,7 +353,7 @@ const appointmentServices = {
         for (const s of scheduleForDay) {
           const startTime = formatInTimeZone(s.start_time, 'UTC', 'HH:mm');
           const endTime = formatInTimeZone(s.end_time, 'UTC', 'HH:mm');
-          
+
           let start = new Date(`${formattedDate}T${startTime}`);
           const end = new Date(`${formattedDate}T${endTime}`);
 
@@ -331,13 +366,13 @@ const appointmentServices = {
             const isBlocked = blocksForDay.some(b => {
               const startTime = formatInTimeZone(b.start_time, 'UTC', 'HH:mm');
               const endTime = formatInTimeZone(b.end_time, 'UTC', 'HH:mm');
-              
+
               const blockStart = new Date(`${formattedDate}T${startTime}`);
               const blockEnd = new Date(`${formattedDate}T${endTime}`);
-              
+
               return (start < blockEnd && slotEnd > blockStart);
             });
-          
+
             const isReserved = appointmentsForDay.some(a => {
               const startTime = formatInTimeZone(a.start_time, 'UTC', 'HH:mm')
               const endTime = formatInTimeZone(a.end_time, 'UTC', 'HH:mm');
@@ -347,14 +382,14 @@ const appointmentServices = {
 
               return (start < apptEnd && slotEnd > apptStart);
             });
-          
+
             if (!isBlocked && !isReserved) {
               timeSlots.push({
                 start_time: format(start, 'HH:mm'),
                 end_time: format(slotEnd, 'HH:mm')
               });
             }
-          
+
             start = addMinutes(start, duration);
           }
         }
@@ -364,7 +399,7 @@ const appointmentServices = {
           slots: timeSlots
         });
       }
-      
+
       return availability;
     } catch (error) {
       console.log(error)
