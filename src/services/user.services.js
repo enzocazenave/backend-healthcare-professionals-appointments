@@ -116,7 +116,7 @@ const userServices = {
     }
   },
 
-  updateUserById: async (userId, { phoneNumber }) => {
+  updateUserById: async (userId, { phoneNumber, fullName, dni }) => {
     try {
       const user = await db.User.findByPk(userId);
 
@@ -126,9 +126,13 @@ const userServices = {
         statusCode: 404
       }
 
-      if (phoneNumber) {
-        await user.update({ phone_number: phoneNumber });
-      }
+      const updateData = {};
+      
+      if (phoneNumber) updateData.phone_number = phoneNumber;
+      if (fullName) updateData.full_name = fullName; 
+      if (dni) updateData.dni = dni;
+
+      await user.update(updateData);
 
       return "Datos actualizados correctamente.";
     } catch (error) {

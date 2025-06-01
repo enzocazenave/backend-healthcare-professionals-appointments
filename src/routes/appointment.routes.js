@@ -42,6 +42,12 @@ router.get('/patients/:patientId', [
   fieldValidator
 ], appointmentControllers.getAppointmentsByPatient);
 
+router.get('/patients/:patientId/more-recent', [
+  tokenValidator,
+  param('patientId', 'PATIENT_ID_IS_REQUIRED').isInt(),
+  fieldValidator
+], appointmentControllers.getMoreRecentAppointmentsByPatientId);
+
 router.get('/professionals/:professionalId/availability', [
   tokenValidator,
   param('professionalId', 'PROFESSIONAL_ID_IS_REQUIRED').isInt(),

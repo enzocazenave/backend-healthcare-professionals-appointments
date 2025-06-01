@@ -27,6 +27,8 @@ router.delete('/prepaid', [
 router.patch('/', [
   tokenValidator,
   body('phoneNumber', 'PHONE_NUMBER_IS_REQUIRED').optional().isString(),
+  body('fullName', 'FULL_NAME_IS_REQUIRED').optional().isString(),
+  body('dni', 'DNI_IS_REQUIRED').optional().isString(),
   fieldValidator
 ], userControllers.updateUserById);
 

@@ -1,7 +1,5 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../config/database.js';
-
-import Prepaid from './Prepaid.js';
 import Role from './Role.js';
 
 const User = sequelize.define('user', {
@@ -19,13 +17,17 @@ const User = sequelize.define('user', {
     allowNull: false,
     unique: true
   },
+  dni: {
+    type: DataTypes.STRING(10),
+    allowNull: true
+  },
   password: {
     type: DataTypes.STRING(255),
     allowNull: false
   },
   phone_number: {
     type: DataTypes.STRING(20),
-    allowNull: true,
+    allowNull: true
   },
   role_id: {
     type: DataTypes.INTEGER,
