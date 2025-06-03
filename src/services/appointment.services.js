@@ -148,7 +148,7 @@ const appointmentServices = {
     }
   },
 
-  getAppointmentsByProfessional: async ({ professionalId, startDate, endDate, patientId }) => {
+  getAppointmentsByProfessional: async ({ professionalId, startDate, endDate, patientId, appointmentStateId }) => {
     try {
       const professional = await db.User.findOne({ where: { id: professionalId, role_id: 2 } });
 
@@ -167,12 +167,23 @@ const appointmentServices = {
         }
       }
 
-      startDate = new Date(startDate);
-      endDate = new Date(endDate);
-
       const whereClause = {
-        professional_id: professionalId,
-        date: { [Sequelize.Op.gte]: startDate, [Sequelize.Op.lte]: endDate }
+        professional_id: professionalId
+      }
+
+      if (appointmentStateId) {
+        whereClause.appointment_state_id = appointmentStateId;
+      }
+
+      if (startDate && endDate) {
+        whereClause.date = { 
+          [Sequelize.Op.gte]: new Date(startDate), 
+          [Sequelize.Op.lte]: new Date(endDate) 
+        }
+      } else if (startDate) {
+        whereClause.date = { [Sequelize.Op.gte]: new Date(startDate) }
+      } else if (endDate) {
+        whereClause.date = { [Sequelize.Op.lte]: new Date(endDate) }
       }
 
       if (patientId) {
@@ -182,6 +193,10 @@ const appointmentServices = {
       const appointments = await db.Appointment.findAll({
         where: whereClause,
         attributes: { exclude: ['professional_id', 'patient_id', 'specialty_id'] },
+        order: [
+          ['date', 'ASC'],
+          ['start_time', 'ASC'],
+        ],
         include: [
           {
             model: db.Specialty,
@@ -197,7 +212,7 @@ const appointmentServices = {
     }
   },
 
-  getAppointmentsByPatient: async ({ patientId, startDate, endDate }) => {
+  getAppointmentsByPatient: async ({ patientId, startDate, endDate, appointmentStateId }) => {
     try {
       const patient = await db.User.findOne({ where: { id: patientId, role_id: 1 } });
 
@@ -207,14 +222,31 @@ const appointmentServices = {
         statusCode: 404
       }
 
-      startDate = parse(startDate, 'yyyy-MM-dd', new Date());
-      endDate = parse(endDate, 'yyyy-MM-dd', new Date());
+      const whereClause = {
+        patient_id: patientId
+      }
+
+      if (appointmentStateId) {
+        whereClause.appointment_state_id = appointmentStateId;
+      }
+
+      if (startDate && endDate) {
+        whereClause.date = { 
+          [Sequelize.Op.gte]: parse(startDate, 'yyyy-MM-dd', new Date()),
+          [Sequelize.Op.lte]: parse(endDate, 'yyyy-MM-dd', new Date())
+        }
+      } else if (startDate) {
+        whereClause.date = { [Sequelize.Op.gte]: parse(startDate, 'yyyy-MM-dd', new Date()) }
+      } else if (endDate) {
+        whereClause.date = { [Sequelize.Op.lte]: parse(endDate, 'yyyy-MM-dd', new Date()) }
+      }
 
       const appointments = await db.Appointment.findAll({
-        where: {
-          patient_id: patientId,
-          date: { [Sequelize.Op.gte]: startDate, [Sequelize.Op.lte]: endDate }
-        },
+        where: whereClause,
+        order: [
+          ['date', 'ASC'],
+          ['start_time', 'ASC'],
+        ],
         attributes: { exclude: ['professional_id', 'patient_id', 'specialty_id'] },
         include: [
           {

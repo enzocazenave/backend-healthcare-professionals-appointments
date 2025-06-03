@@ -35,7 +35,8 @@ const appointmentControllers = {
         professionalId: req.params.professionalId,
         startDate: req.query.startDate,
         endDate: req.query.endDate,
-        patientId: req.query.patientId
+        patientId: req.query.patientId,
+        appointmentStateId: req.query.appointmentStateId
       });
       sendSuccessResponse(res, 200, response);
     } catch(error) {
@@ -48,7 +49,8 @@ const appointmentControllers = {
       const response = await appointmentServices.getAppointmentsByPatient({
         patientId: req.params.patientId,
         startDate: req.query.startDate,
-        endDate: req.query.endDate
+        endDate: req.query.endDate,
+        appointmentStateId: req.query.appointmentStateId
       });
       sendSuccessResponse(res, 200, response);
     } catch(error) {
