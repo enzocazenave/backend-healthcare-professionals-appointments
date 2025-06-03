@@ -5,7 +5,7 @@
   "main": "./src/index.js",
   "type": "module",
   "scripts": {
-    "dev": "node --env-file ./.env --watch ./src/index.js"
+    "dev": "nodemon --env-file ./.env ./src/index.js"
   },
   "keywords": [],
   "author": "",
@@ -23,6 +23,7 @@
     "morgan": "^1.10.0",
     "mssql": "^11.0.1",
     "nodemailer": "^6.10.0",
+    "nodemon": "^3.1.10",
     "sequelize": "^6.37.6",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",

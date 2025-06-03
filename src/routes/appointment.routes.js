@@ -28,17 +28,19 @@ router.patch('/complete/:appointmentId', [
 router.get('/professionals/:professionalId', [
   tokenValidator,
   param('professionalId', 'PROFESSIONAL_ID_IS_REQUIRED').isInt(),
-  query('startDate', 'START_DATE_IS_REQUIRED').isDate(),
-  query('endDate', 'END_DATE_IS_REQUIRED').isDate(),
+  query('startDate', 'START_DATE_IS_REQUIRED').isDate().optional(),
+  query('endDate', 'END_DATE_IS_REQUIRED').isDate().optional(),
   query('patientId', 'PATIENT_ID_IS_REQUIRED').isInt().optional(),
+  query('appointmentStateId', 'APPOINTMENT_STATE_ID_IS_REQUIRED').isInt().optional(),
   fieldValidator
 ], appointmentControllers.getAppointmentsByProfessional);
 
 router.get('/patients/:patientId', [
   tokenValidator,
   param('patientId', 'PROFESSIONAL_ID_IS_REQUIRED').isInt(),
-  query('startDate', 'START_DATE_IS_REQUIRED').isDate(),
-  query('endDate', 'END_DATE_IS_REQUIRED').isDate(),
+  query('startDate', 'START_DATE_IS_REQUIRED').isDate().optional(),
+  query('endDate', 'END_DATE_IS_REQUIRED').isDate().optional(),
+  query('appointmentStateId', 'APPOINTMENT_STATE_ID_IS_REQUIRED').isInt().optional(),
   fieldValidator
 ], appointmentControllers.getAppointmentsByPatient);
 
