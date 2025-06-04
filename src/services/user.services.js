@@ -140,6 +140,25 @@ const userServices = {
     }
   },
 
+  addOrUpdatePushToken: async (userId, pushToken) => {
+    try {
+      const user = await db.User.findByPk(userId);
+
+      if (!user) throw {
+        layer: 'userServices',
+        key: 'USER_NOT_FOUND',
+        statusCode: 404
+      }
+
+      await user.update({ push_token: pushToken });
+
+      return "Token actualizado correctamente.";
+    } catch (error) {
+      console.log(error)
+      throw error;
+    }
+  },
+
   deleteUserById: async (userId) => {
     try {
       const user = await db.User.findByPk(userId);

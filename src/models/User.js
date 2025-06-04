@@ -29,6 +29,10 @@ const User = sequelize.define('user', {
     type: DataTypes.STRING(20),
     allowNull: true
   },
+  push_token: {
+    type: DataTypes.STRING(255),
+    allowNull: true,
+  },
   role_id: {
     type: DataTypes.INTEGER,
     allowNull: false,
