@@ -61,6 +61,16 @@ const userControllers = {
     } catch(error) {
       sendErrorResponse(res, error?.statusCode, error);
     }
+  },
+
+  addOrUpdatePushToken: async (req = request, res = response) => {
+    try {
+      const response = await userServices.addOrUpdatePushToken(req.user.userId, req.body.pushToken);
+
+      sendSuccessResponse(res, 200, response);
+    } catch(error) {
+      sendErrorResponse(res, error?.statusCode, error);
+    }
   }
 }
 
