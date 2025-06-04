@@ -348,7 +348,7 @@ const appointmentServices = {
       const schedule = await db.ProfessionalSchedule.findAll({
         where: { professional_id: professionalId },
       });
-
+      console.log(schedule)
       const blocks = await db.ProfessionalScheduleBlock.findAll({
         where: {
           professional_id: professionalId,
