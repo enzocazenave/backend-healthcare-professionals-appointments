@@ -12,6 +12,7 @@
   "license": "ISC",
   "packageManager": "pnpm@10.4.1",
   "dependencies": {
+    "backend-healthcare-professionals-appointments": "file:",
     "bcryptjs": "^3.0.2",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
@@ -22,6 +23,7 @@
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
     "mssql": "^11.0.1",
+    "mysql2": "^3.14.1",
     "nodemailer": "^6.10.0",
     "nodemon": "^3.1.10",
     "sequelize": "^6.37.6",
