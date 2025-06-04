@@ -14,7 +14,16 @@ const medicalRecordServices = {
       const medicalRecords = await db.MedicalRecord.findAll({
         where: {
           patient_id: patientId
-        }
+        },
+        order: [['createdAt', 'DESC']],
+        attributes: { exclude: ['professional_id', 'patient_id'] },
+        include: [
+          {
+            model: db.User,
+            as: 'professional',
+            attributes: ['full_name', 'email', 'phone_number']
+          }
+        ]
       });
 
       return medicalRecords;
