@@ -22,11 +22,17 @@ const ProfessionalScheduleBlock = sequelize.define('professional_schedule_block'
   },
   start_time: {
     type: DataTypes.TIME,
-    allowNull: false
+    allowNull: false,
+    get() {
+      return formatTimeIfNecessary(this.getDataValue('start_time'));
+    }
   },
   end_time: {
     type: DataTypes.TIME,
-    allowNull: false
+    allowNull: false,
+    get() {
+      return formatTimeIfNecessary(this.getDataValue('end_time'));
+    }
   },
   reason: {
     type: DataTypes.STRING(255),
