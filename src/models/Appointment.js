@@ -3,6 +3,7 @@ import sequelize from '../config/database.js';
 import User from './User.js';
 import Specialty from './Specialty.js';
 import AppointmentState from './AppointmentState.js';
+import formatTimeIfNecessary from '../utils/formatTimeIfNecessary.js';
 
 const Appointment = sequelize.define('appointment', {
   id: {

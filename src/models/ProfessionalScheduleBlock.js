@@ -1,6 +1,7 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../config/database.js';
 import User from './User.js';
+import formatTimeIfNecessary from '../utils/formatTimeIfNecessary.js';
 
 const ProfessionalScheduleBlock = sequelize.define('professional_schedule_block', {
   id: {
