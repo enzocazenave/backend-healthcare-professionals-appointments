@@ -61,6 +61,11 @@ const Appointment = sequelize.define('appointment', {
       key: 'id'
     }
   },
+  already_notified: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false
+  }
 }, {
   timestamps: false,
   tableName: 'appointments'

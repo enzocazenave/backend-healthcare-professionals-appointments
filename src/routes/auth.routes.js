@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { body } from 'express-validator';
 import authControllers from '../controllers/auth.controllers.js';
 import fieldValidator from '../middlewares/fieldValidator.js';
+import tokenValidator from '../middlewares/tokenValidator.js';
 
 const router = Router();
 
@@ -20,7 +21,9 @@ router.post("/login", [
 
 router.post("/refresh-token", [], authControllers.refreshToken);
 
-router.post("/logout", [], authControllers.logout);
+router.post("/logout", [
+  tokenValidator,
+], authControllers.logout);
 
 router.post("/forgot-password", [
   body('email', 'EMAIL_IS_REQUIRED').isString().isEmail(),

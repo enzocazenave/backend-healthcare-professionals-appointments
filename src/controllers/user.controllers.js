@@ -71,6 +71,16 @@ const userControllers = {
     } catch(error) {
       sendErrorResponse(res, error?.statusCode, error);
     }
+  },
+
+  deletePushToken: async (req = request, res = response) => {
+    try {
+      const response = await userServices.deletePushToken(req.user.userId);
+
+      sendSuccessResponse(res, 200, response);
+    } catch(error) {
+      sendErrorResponse(res, error?.statusCode, error);
+    }
   }
 }
 

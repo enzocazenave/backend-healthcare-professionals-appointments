@@ -24,6 +24,11 @@ router.delete('/prepaid', [
   fieldValidator
 ], userControllers.deletePrepaid);
 
+router.delete('/push-token', [
+  tokenValidator,
+  fieldValidator
+], userControllers.deletePushToken);
+
 router.post('/push-token', [
   tokenValidator,
   body('pushToken', 'PUSH_TOKEN_IS_REQUIRED').isString(),
