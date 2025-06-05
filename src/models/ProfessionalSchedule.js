@@ -30,28 +30,14 @@ const ProfessionalSchedule = sequelize.define('professional_schedule', {
     type: DataTypes.TIME,
     allowNull: false,
     get() {
-      const value = this.getDataValue('start_time');
-
-      if (typeof value === 'string') {
-        const [hours, minutes, seconds] = value.split(':').map(Number);
-        return new Date(Date.UTC(1970, 0, 1, hours, minutes, seconds));
-      }
-
-      return value;
+      return formatTimeIfNecessary(this.getDataValue('start_time'));
     }
   },
   end_time: {
     type: DataTypes.TIME,
     allowNull: false,
     get() {
-      const value = this.getDataValue('end_time');
-
-      if (typeof value === 'string') {
-        const [hours, minutes, seconds] = value.split(':').map(Number);
-        return new Date(Date.UTC(1970, 0, 1, hours, minutes, seconds));
-      }
-
-      return value;
+      return formatTimeIfNecessary(this.getDataValue('end_time'));
     }
   },
   appointment_duration: {
@@ -67,7 +53,7 @@ const ProfessionalSchedule = sequelize.define('professional_schedule', {
         msg: 'APPOINTMENT_DURATION_IS_TOO_SHORT'
       }
     }
-  }
+  } 
 }, {
   timestamps: false,
   tableName: 'professional_schedules'

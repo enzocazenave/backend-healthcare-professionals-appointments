@@ -40,11 +40,17 @@ const Appointment = sequelize.define('appointment', {
   },
   start_time: {
     type: DataTypes.TIME,
-    allowNull: false
+    allowNull: false,
+    get() {
+      return formatTimeIfNecessary(this.getDataValue('start_time'));
+    }
   },
   end_time: {
     type: DataTypes.TIME,
-    allowNull: false
+    allowNull: false,
+    get() {
+      return formatTimeIfNecessary(this.getDataValue('end_time'));
+    }
   },
   appointment_state_id: {
     type: DataTypes.INTEGER,
