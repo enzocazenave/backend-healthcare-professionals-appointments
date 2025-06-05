@@ -208,6 +208,14 @@ const authServices = {
     } catch(error) {
       throw error;
     }
+  },
+
+  logout: async (userId) => {
+    try {
+      await db.User.update({ push_token: null }, { where: { id: userId } });
+    } catch (error) {
+      throw error;
+    }
   }
 }
 

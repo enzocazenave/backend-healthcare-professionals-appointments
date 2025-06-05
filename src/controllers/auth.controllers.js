@@ -69,7 +69,9 @@ const authControllers = {
   logout: async (req = request, res = response) => {
     try {
       if (!req.cookies.refreshToken) throw { layer: 'authControllers', key: 'REFRESH_TOKEN_IS_REQUIRED', statusCode: 401 }
-      
+
+      await authServices.logout(req.user.userId);
+
       res.clearCookie('refreshToken');
       sendSuccessResponse(res, 200, "Sesión cerrada correctamente.");
     } catch(error) {
