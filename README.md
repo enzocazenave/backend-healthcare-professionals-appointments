@@ -16,7 +16,7 @@ Para evitar errores al ejecutar el servidor sin credenciales de Firebase, se rec
 ```js
 //import { checkNext24hAppointments } from './push-notifications/pushNotificator.js'
 
-/*cron.schedule('*/30 * * * * *', async () => {
+//cron.schedule('*/30 * * * * *', async () => {
 //  await checkNext24hAppointments()
 //})
 ```
