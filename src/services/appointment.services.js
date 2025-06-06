@@ -271,12 +271,21 @@ const appointmentServices = {
   getMoreRecentAppointmentsByPatientId: async ({ patientId }) => {
     try {
       const today = new Date();
+      today.setHours(0, 0, 0, 0);
 
       const appointment = await db.Appointment.findOne({
         where: {
           patient_id: patientId,
           appointment_state_id: { [Sequelize.Op.in]: [1, 3] },
-          date: { [Sequelize.Op.gte]: today }
+          [Sequelize.Op.or]: [
+            {
+              date: { [Sequelize.Op.gt]: today }
+            },
+            {
+              date: today,
+              start_time: { [Sequelize.Op.gte]: format(new Date(), 'HH:mm:ss') }
+            }
+          ]
         },
         order: [
           ['date', 'ASC'],

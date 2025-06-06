@@ -17,10 +17,20 @@ export const checkNext24hAppointments = async () => {
 
   const appointments = await db.Appointment.findAll({
     where: {
-      date: {
-        [Op.gte]: now,
-        [Op.lt]: in24h,
-      },
+      [Op.or]: [
+        {
+          date: now.toISOString().split('T')[0],
+          start_time: {
+            [Op.gte]: now.toTimeString().slice(0,8)
+          }
+        },
+        {
+          date: in24h.toISOString().split('T')[0],
+          start_time: {
+            [Op.lt]: now.toTimeString().slice(0,8)
+          }
+        }
+      ],
       appointment_state_id: 1,
       already_notified: false
     },
