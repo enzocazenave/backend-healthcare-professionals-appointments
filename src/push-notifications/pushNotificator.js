@@ -71,7 +71,8 @@ export const checkNext24hAppointments = async () => {
 
       const formattedTime = new Date(appointment.start_time).toLocaleTimeString('es-AR', {
         hour: '2-digit',
-        minute: '2-digit'
+        minute: '2-digit',
+        hour12: false
       })
 
       try {
