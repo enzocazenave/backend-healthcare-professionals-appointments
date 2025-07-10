@@ -4,7 +4,7 @@ import { Op } from 'sequelize';
 import fs from 'fs';
 import path from 'path';
 
-const firebaseKeyPath = path.resolve('src/push-notifications/firebase-key.json');
+const firebaseKeyPath = path.resolve('/etc/secrets/firebase-key.json');
 const serviceAccount = JSON.parse(fs.readFileSync(firebaseKeyPath, 'utf8'));
 
 admin.initializeApp({
