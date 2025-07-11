@@ -4,7 +4,7 @@ import { Op } from 'sequelize';
 import fs from 'fs';
 import path from 'path';
 
-const firebaseKeyPath = path.resolve('/etc/secrets/firebase-key.json');
+const firebaseKeyPath = path.resolve('src/push-notifications/firebase-key.json');
 const serviceAccount = JSON.parse(fs.readFileSync(firebaseKeyPath, 'utf8'));
 
 admin.initializeApp({
@@ -19,13 +19,13 @@ export const checkNext24hAppointments = async () => {
     where: {
       [Op.or]: [
         {
-          date: now.toISOString().split('T')[0],
+          date: { [Op.gte]: now.toISOString().split('T')[0] },
           start_time: {
             [Op.gte]: now.toTimeString().slice(0,8)
           }
         },
         {
-          date: in24h.toISOString().split('T')[0],
+          date: { [Op.lt]: in24h.toISOString().split('T')[0] },
           start_time: {
             [Op.lt]: now.toTimeString().slice(0,8)
           }
@@ -72,7 +72,8 @@ export const checkNext24hAppointments = async () => {
       const formattedTime = new Date(appointment.start_time).toLocaleTimeString('es-AR', {
         hour: '2-digit',
         minute: '2-digit',
-        hour12: false
+        hour12: false,
+        timeZone: 'America/Argentina/Buenos_Aires',
       })
 
       try {
