@@ -1,6 +1,6 @@
 import admin from 'firebase-admin';
 import db from '../config/index.js'
-import { Op } from 'sequelize';
+import { Op, Sequelize } from 'sequelize';
 import fs from 'fs';
 import path from 'path';
 
