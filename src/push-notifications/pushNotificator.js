@@ -13,15 +13,15 @@ admin.initializeApp({
 
 export const checkNext24hAppointments = async () => {
   const now = new Date();
-  const in24h = new Date(Date.now() + 24 * 60 * 60 * 1000);
+  const in24h = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+
+  const today = now.toISOString().slice(0, 10);
+  const tomorrow = in24h.toISOString().slice(0, 10);
 
   const appointmentsRaw = await db.Appointment.findAll({
     where: {
       date: {
-        [Op.between]: [
-          now.toISOString().split('T')[0],
-          in24h.toISOString().split('T')[0],
-        ],
+        [Op.between]: [today, tomorrow]
       },
       appointment_state_id: 1,
       already_notified: false,
@@ -47,9 +47,23 @@ export const checkNext24hAppointments = async () => {
     ],
   });
 
-  const appointments = appointmentsRaw.filter((a) => {
-    const timeStr = a.start_time.toTimeString().slice(0, 8);
-    const fullDate = new Date(`${a.date}T${timeStr}`);
+  const appointments = appointmentsRaw.filter(a => {
+    const fullDate = (() => {
+      const d = new Date(a.date);
+      if (typeof a.start_time === 'string') {
+        const [h, m, s] = a.start_time.split(':').map(Number);
+        d.setHours(h, m, s, 0);
+      } else {
+        d.setHours(
+          a.start_time.getHours(),
+          a.start_time.getMinutes(),
+          a.start_time.getSeconds(),
+          0
+        );
+      }
+      return d;
+    })();
+
     return fullDate >= now && fullDate <= in24h;
   });
 
