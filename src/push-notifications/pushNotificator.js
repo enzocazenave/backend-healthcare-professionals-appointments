@@ -1,6 +1,6 @@
 import admin from 'firebase-admin';
-import db from '../config/index.js'
-import { Op, Sequelize } from 'sequelize';
+import db from '../config/index.js';
+import { Op } from 'sequelize';
 import fs from 'fs';
 import path from 'path';
 
@@ -9,27 +9,25 @@ const serviceAccount = JSON.parse(fs.readFileSync(firebaseKeyPath, 'utf8'));
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-})
+});
 
 export const checkNext24hAppointments = async () => {
   const now = new Date();
   const in24h = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
-  const appointments = await db.Appointment.findAll({
+  const appointmentsRaw = await db.Appointment.findAll({
     where: {
+      date: {
+        [Op.between]: [
+          now.toISOString().split('T')[0],
+          in24h.toISOString().split('T')[0],
+        ],
+      },
       appointment_state_id: 1,
       already_notified: false,
-      [Op.and]: [
-        Sequelize.where(
-          Sequelize.literal(`CAST(date || 'T' || start_time AS TIMESTAMP)`),
-          {
-            [Op.between]: [now.toISOString(), in24h.toISOString()],
-          }
-        )
-      ]
     },
     attributes: {
-      exclude: ['professional_id', 'patient_id', 'appointment_state_id', 'specialty_id']
+      exclude: ['professional_id', 'patient_id', 'appointment_state_id', 'specialty_id'],
     },
     include: [
       {
@@ -45,33 +43,42 @@ export const checkNext24hAppointments = async () => {
       {
         model: db.Specialty,
         attributes: ['name'],
-      }
-    ]
+      },
+    ],
+  });
+
+  const appointments = appointmentsRaw.filter((a) => {
+    const timeStr = a.start_time.toTimeString().slice(0, 8);
+    const fullDate = new Date(`${a.date}T${timeStr}`);
+    return fullDate >= now && fullDate <= in24h;
   });
 
   if (appointments.length === 0) {
-    console.log('No hay turnos para notificar en las proximas 24hs')
-    return
-  };
+    console.log('No hay turnos para notificar en las próximas 24hs');
+    return;
+  }
 
   await Promise.allSettled(
     appointments.map(async (appointment) => {
       if (!appointment.patient.push_token) return;
 
-      const formattedDate = new Date(appointment.date).toLocaleDateString('es-AR', {
-        day: 'numeric',
-        month: 'long'
-      })
+      const timeStr = appointment.start_time.toTimeString().slice(0, 8);
+      const fullDate = new Date(`${appointment.date}T${timeStr}`);
 
-      const formattedTime = new Date(appointment.start_time).toLocaleTimeString('es-AR', {
+      const formattedDate = fullDate.toLocaleDateString('es-AR', {
+        day: 'numeric',
+        month: 'long',
+      });
+
+      const formattedTime = fullDate.toLocaleTimeString('es-AR', {
         hour: '2-digit',
         minute: '2-digit',
         hour12: false,
-        timeZone: 'America/Argentina/Buenos_Aires'
-      })
+        timeZone: 'America/Argentina/Buenos_Aires',
+      });
 
       try {
-        const message = `Tenés un turno el ${formattedDate} a las ${formattedTime} con ${appointment.professional.full_name} en la especialidad de ${appointment.specialty.name}`
+        const message = `Tenés un turno el ${formattedDate} a las ${formattedTime} con ${appointment.professional.full_name} en la especialidad de ${appointment.specialty.name}`;
 
         const notificationResponse = await admin.messaging().send({
           token: appointment.patient.push_token,
@@ -90,24 +97,21 @@ export const checkNext24hAppointments = async () => {
         });
 
         if (typeof notificationResponse === 'string') {
-          await db.Appointment.update({
-            already_notified: true
-          }, {
-            where: {
-              id: appointment.id
-            }
-          })
+          await db.Appointment.update(
+            { already_notified: true },
+            { where: { id: appointment.id } }
+          );
 
           await db.Notification.create({
             user_id: appointment.patient.id,
-            message: message
-          })
+            message,
+          });
         } else {
-          console.log('Error notificando turno', notificationResponse)
+          console.log('Error notificando turno', notificationResponse);
         }
       } catch (err) {
         console.error(`Error notificando turno ${appointment.id}:`, err);
       }
     })
   );
-}
+};
