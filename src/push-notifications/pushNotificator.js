@@ -76,20 +76,17 @@ export const checkNext24hAppointments = async () => {
     appointments.map(async (appointment) => {
       if (!appointment.patient.push_token) return;
 
-      const timeStr = appointment.start_time.toTimeString().slice(0, 8);
-      const fullDate = new Date(`${appointment.date}T${timeStr}`);
-
-      const formattedDate = fullDate.toLocaleDateString('es-AR', {
+      const formattedDate = new Date(appointment.date).toLocaleDateString('es-AR', {
         day: 'numeric',
-        month: 'long',
-      });
+        month: 'long'
+      })
 
-      const formattedTime = fullDate.toLocaleTimeString('es-AR', {
+      const formattedTime = new Date(appointment.start_time).toLocaleTimeString('es-AR', {
         hour: '2-digit',
         minute: '2-digit',
         hour12: false,
-        timeZone: 'America/Argentina/Buenos_Aires',
-      });
+        timeZone: 'America/Argentina/Buenos_Aires'
+      })
 
       try {
         const message = `Tenés un turno el ${formattedDate} a las ${formattedTime} con ${appointment.professional.full_name} en la especialidad de ${appointment.specialty.name}`;
